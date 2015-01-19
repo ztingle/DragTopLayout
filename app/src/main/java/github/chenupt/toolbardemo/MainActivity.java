@@ -5,7 +5,9 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -39,6 +41,12 @@ public class MainActivity extends ActionBarActivity {
 
         adapter = new ModelListAdapter(this, getModelManager());
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                dragLayout.openMenu(true);
+            }
+        });
 
         adapter.setList(getList());
         adapter.notifyDataSetChanged();
@@ -52,7 +60,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (view.getChildCount() > 0) {
-                    if (view.getChildAt(0).getTop() <50) {
+                    if (view.getChildAt(0).getTop() >= 0) {
                         dragLayout.setTouchMode(true);
                     } else {
                         dragLayout.setTouchMode(false);

@@ -31,6 +31,7 @@ public class DragTopLayout extends FrameLayout {
 
     // 默认panel显示
     private PanelState panelState = PanelState.EXPANDED;
+    private boolean shouldIntercept = true;
 
     public DragTopLayout(Context context) {
         this(context, null);
@@ -45,10 +46,10 @@ public class DragTopLayout extends FrameLayout {
         init();
     }
 
-    private void init(){
+    private void init() {
         dragHelper = ViewDragHelper.create(this, 1.0f, callback);
         // 设置滚动速度
-        dragHelper.setMinVelocity(1);
+        dragHelper.setMinVelocity(80);
     }
 
     @Override
@@ -57,20 +58,6 @@ public class DragTopLayout extends FrameLayout {
         dragContentView = findViewById(R.id.drag_content_view);
         menuView = findViewById(R.id.menu_view);
     }
-
-//    @Override
-//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//        Log.d(TAG, "onMeasure" + widthMeasureSpec + "+" + heightMeasureSpec);
-//        measureChildren(widthMeasureSpec, heightMeasureSpec);
-//
-//        int maxWidth = MeasureSpec.getSize(widthMeasureSpec);
-//        int maxHeight = MeasureSpec.getSize(heightMeasureSpec);
-//
-//
-//        // 设置要显示的大小返回给父view，确定view的大小
-//        setMeasuredDimension(ViewCompat.resolveSizeAndState(maxWidth, widthMeasureSpec, 0), ViewCompat.resolveSizeAndState(maxHeight, heightMeasureSpec, 0));
-//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//    }
 
 
     @Override
@@ -91,8 +78,19 @@ public class DragTopLayout extends FrameLayout {
                 contentTop + dragContentView.getHeight());
     }
 
-    private void openMenu(){
+    public void openMenu() {
         contentTop = menuView.getHeight();
+        requestLayout();
+    }
+
+    public void openMenu(boolean anim) {
+        contentTop = menuView.getHeight();
+        if (anim) {
+            dragHelper.smoothSlideViewTo(dragContentView, 0, contentTop);
+            postInvalidate();
+        } else {
+            requestLayout();
+        }
     }
 
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
@@ -127,13 +125,12 @@ public class DragTopLayout extends FrameLayout {
             super.onViewReleased(releasedChild, xvel, yvel);
             Log.i(TAG, "onViewReleased:" + "xvel:" + xvel + ",yvel:" + yvel);
             //yvel Fling产生的值，yvel > 0 则是快速往下Fling || yvel < 0 则是快速往上Fling
-            int top = getPaddingTop();
-//            int top = getPaddingTop() - dragLayout.getHeight();
-//            panelState = PanelState.COLLAPSED;
-//            if (yvel > 0 || (yvel == 0 && dragOffset > -0.2f)/* 后面这个小括号里判断处理拖动之后停下来但是未松手的情况 */) {
-//                panelState = PanelState.EXPANDED;
-//                top = getPaddingTop();
-//            }
+            int top;
+            if (yvel > 0) {
+                top = menuView.getHeight() + getPaddingTop();
+            } else {
+                top = getPaddingTop();
+            }
 //            // 设置捕获的drag view 的位置
             DebugLog.d("top:" + top + ", left:" + releasedChild.getLeft());
             dragHelper.settleCapturedViewAt(releasedChild.getLeft(), top);     // 有滑动的效果
@@ -144,9 +141,10 @@ public class DragTopLayout extends FrameLayout {
         public void onViewDragStateChanged(int state) {
             // 1 -> 2 -> 0
             Log.d(TAG, "onViewDragStateChanged:" + state);
-            // 停止的状态
-            if(state == ViewDragHelper.STATE_IDLE){
-                // TODO call listener
+            if (state == ViewDragHelper.STATE_IDLE) {
+                if (panelSlideListener != null && panelState == PanelState.COLLAPSED) {
+                    panelSlideListener.onPanelCollapsed();  // 当panel收起时回调
+                }
             }
             super.onViewDragStateChanged(state);
         }
@@ -156,7 +154,7 @@ public class DragTopLayout extends FrameLayout {
     @Override
     public void computeScroll() {
         // 滑动
-        if(dragHelper.continueSettling(true)){
+        if (dragHelper.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(this);
         }
     }
@@ -165,7 +163,7 @@ public class DragTopLayout extends FrameLayout {
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (shouldIntercept) {
             return dragHelper.shouldInterceptTouchEvent(ev);
-        }else{
+        } else {
             return super.onInterceptTouchEvent(ev);
         }
     }
@@ -176,10 +174,25 @@ public class DragTopLayout extends FrameLayout {
         return true;
     }
 
-    private boolean shouldIntercept = true;
 
-    public void setTouchMode(boolean shouldIntercept){
+    public void setTouchMode(boolean shouldIntercept) {
         this.shouldIntercept = shouldIntercept;
     }
+
+    public void setPanelState(PanelState panelState) {
+        this.panelState = panelState;
+    }
+
+    // 设置回调接口
+    private PanelSlideListener panelSlideListener;
+
+    public interface PanelSlideListener {
+        public void onPanelCollapsed();
+    }
+
+    public void setPanelSlideListener(PanelSlideListener panelSlideListener) {
+        this.panelSlideListener = panelSlideListener;
+    }
+
 
 }
