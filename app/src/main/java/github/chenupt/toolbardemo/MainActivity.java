@@ -39,6 +39,8 @@ public class MainActivity extends ActionBarActivity {
         toolbar.setTitle("ToolBar");
         setSupportActionBar(toolbar);
 
+        dragLayout.openMenu();
+
         adapter = new ModelListAdapter(this, getModelManager());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

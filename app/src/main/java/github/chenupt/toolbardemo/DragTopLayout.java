@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 /**
@@ -79,8 +80,15 @@ public class DragTopLayout extends FrameLayout {
     }
 
     public void openMenu() {
-        contentTop = menuView.getHeight();
-        requestLayout();
+        ViewTreeObserver vto = menuView.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                menuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                contentTop = menuView.getHeight();
+                requestLayout();
+            }
+        });
     }
 
     public void openMenu(boolean anim) {
@@ -188,6 +196,7 @@ public class DragTopLayout extends FrameLayout {
 
     public interface PanelSlideListener {
         public void onPanelCollapsed();
+//        public void onSliding(float offset);
     }
 
     public void setPanelSlideListener(PanelSlideListener panelSlideListener) {
