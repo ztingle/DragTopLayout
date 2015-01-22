@@ -24,6 +24,7 @@ public class DragTopLayout extends FrameLayout {
     private View menuView;
 
     private int contentTop;
+    private int menuHeight;
 
     public enum PanelState {
         EXPANDED,
@@ -68,8 +69,14 @@ public class DragTopLayout extends FrameLayout {
         dragRange = getHeight();    // FIXME set menu size
 
 
-        menuView.setTop(contentTop - menuView.getHeight());
-        menuView.setBottom(contentTop);
+        if (menuHeight == 0) {
+            menuHeight = menuView.getHeight();
+        }
+//            menuView.setTop(contentTop - menuView.getHeight());
+//            menuView.setTop(0);
+//            menuView.setBottom(contentTop);
+//        menuView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, contentTop));
+        menuView.layout(left, 0, right, contentTop);
 
         // 根据手势的top, 设置子控件的位置，这里只有一个ViewGroup的继承类
         dragContentView.layout(
@@ -84,15 +91,15 @@ public class DragTopLayout extends FrameLayout {
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                menuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                contentTop = menuView.getHeight();
+                contentTop = menuHeight;
                 requestLayout();
+                menuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
     }
 
     public void openMenu(boolean anim) {
-        contentTop = menuView.getHeight();
+        contentTop = menuHeight;
         if (anim) {
             dragHelper.smoothSlideViewTo(dragContentView, 0, contentTop);
             postInvalidate();
@@ -122,10 +129,10 @@ public class DragTopLayout extends FrameLayout {
 
         @Override
         public int clampViewPositionVertical(View child, int top, int dy) {
-            DebugLog.d("top:" + top + ", dy:" + dy + ", menuSize:" + menuView.getHeight());
-            int menuSize = menuView.getHeight();
-            return Math.min(menuSize, Math.max(top, getPaddingTop()));
-//            return Math.max(top, getPaddingTop());
+            DebugLog.d("top:" + top + ", dy:" + dy + ", menuSize:" + menuHeight);
+            int menuSize = menuHeight;
+//            return Math.min(menuSize, Math.max(top, getPaddingTop()));
+            return Math.max(top, getPaddingTop());
         }
 
         @Override
@@ -134,8 +141,8 @@ public class DragTopLayout extends FrameLayout {
             Log.i(TAG, "onViewReleased:" + "xvel:" + xvel + ",yvel:" + yvel);
             //yvel Fling产生的值，yvel > 0 则是快速往下Fling || yvel < 0 则是快速往上Fling
             int top;
-            if (yvel > 0) {
-                top = menuView.getHeight() + getPaddingTop();
+            if (yvel > 0 || contentTop > menuHeight) {
+                top = menuHeight + getPaddingTop();
             } else {
                 top = getPaddingTop();
             }
