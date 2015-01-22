@@ -24,6 +24,7 @@ public class DragTopLayout extends FrameLayout {
     private View menuView;
 
     private int contentTop;
+    private float radio;
 
     public enum PanelState {
         EXPANDED,
@@ -101,6 +102,11 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
+    public void toggleMenu(){
+        // TODO
+    }
+
+
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
@@ -111,6 +117,11 @@ public class DragTopLayout extends FrameLayout {
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
             contentTop = top;
+            radio = (float)contentTop / menuView.getHeight();
+            if (panelSlideListener != null) {
+                DebugLog.d("radio:" + radio);
+                panelSlideListener.onSliding(radio);
+            }
             // 重新布局
             requestLayout();
         }
@@ -149,8 +160,16 @@ public class DragTopLayout extends FrameLayout {
         public void onViewDragStateChanged(int state) {
             // 1 -> 2 -> 0
             Log.d(TAG, "onViewDragStateChanged:" + state);
+
             if (state == ViewDragHelper.STATE_IDLE) {
-                if (panelSlideListener != null && panelState == PanelState.COLLAPSED) {
+                setTouchMode(true);
+                if (radio == 0){
+                    panelState = PanelState.COLLAPSED;
+                    setTouchMode(false);
+                } else if(radio == 1.0f){
+                    panelState = PanelState.EXPANDED;
+                }
+                if (panelSlideListener != null) {
                     panelSlideListener.onPanelCollapsed();  // 当panel收起时回调
                 }
             }
@@ -196,7 +215,7 @@ public class DragTopLayout extends FrameLayout {
 
     public interface PanelSlideListener {
         public void onPanelCollapsed();
-//        public void onSliding(float offset);
+        public void onSliding(float radio);
     }
 
     public void setPanelSlideListener(PanelSlideListener panelSlideListener) {

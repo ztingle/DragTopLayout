@@ -40,6 +40,17 @@ public class MainActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
 
         dragLayout.openMenu();
+        dragLayout.setPanelSlideListener(new DragTopLayout.PanelSlideListener() {
+            @Override
+            public void onPanelCollapsed() {
+
+            }
+
+            @Override
+            public void onSliding(float radio) {
+
+            }
+        });
 
         adapter = new ModelListAdapter(this, getModelManager());
         listView.setAdapter(adapter);
@@ -62,6 +73,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (view.getChildCount() > 0) {
+                    DebugLog.d("onScroll:" + view.getChildAt(0).getTop());
                     if (view.getChildAt(0).getTop() >= 0) {
                         dragLayout.setTouchMode(true);
                     } else {
