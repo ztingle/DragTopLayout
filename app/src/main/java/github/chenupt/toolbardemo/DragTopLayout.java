@@ -42,6 +42,7 @@ public class DragTopLayout extends FrameLayout {
 
     private int contentTop;
     private int menuHeight;
+    private boolean isRefreshing;
 
     public static enum PanelState {
         EXPANDED,
@@ -130,6 +131,10 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
+    public void onRefreshComplete(){
+        isRefreshing = false;
+    }
+
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
@@ -140,9 +145,13 @@ public class DragTopLayout extends FrameLayout {
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
             contentTop = top;
-            if (wizard.panelSlideListener != null){
+            if (wizard.panelListener != null){
                 float radio = (float)contentTop / menuHeight;
-                wizard.panelSlideListener.onSliding(radio);
+                wizard.panelListener.onSliding(radio);
+                if(radio > 1.5f){
+                    wizard.panelListener.onRefresh();
+                    isRefreshing = true;
+                }
             }
             // 重新布局
             requestLayout();
@@ -178,7 +187,7 @@ public class DragTopLayout extends FrameLayout {
         public void onViewDragStateChanged(int state) {
             // 1 -> 2 -> 0
             if (state == ViewDragHelper.STATE_IDLE) {
-                if (wizard.panelSlideListener != null) {
+                if (wizard.panelListener != null) {
                     switch (panelState) {
                         case COLLAPSED:
                             panelState = PanelState.EXPANDED;
@@ -187,7 +196,7 @@ public class DragTopLayout extends FrameLayout {
                             panelState = PanelState.COLLAPSED;
                             break;
                     }
-                    wizard.panelSlideListener.onPanelStateChanged(panelState);
+                    wizard.panelListener.onPanelStateChanged(panelState);
                 }
             }
             super.onViewDragStateChanged(state);
@@ -226,10 +235,30 @@ public class DragTopLayout extends FrameLayout {
         this.wizard = setupWizard;
     }
 
-    public interface PanelSlideListener {
+    public interface PanelListener {
         public void onPanelStateChanged(PanelState panelState);
         public void onSliding(float radio);
+        public void onRefresh();
     }
+
+    public class SimplePanelListener implements PanelListener {
+
+        @Override
+        public void onPanelStateChanged(PanelState panelState) {
+
+        }
+
+        @Override
+        public void onSliding(float radio) {
+
+        }
+
+        @Override
+        public void onRefresh() {
+
+        }
+    }
+
 
     // -----------------
 
@@ -239,15 +268,15 @@ public class DragTopLayout extends FrameLayout {
 
     public static final class SetupWizard {
         private Context context;
-        private PanelSlideListener panelSlideListener;
+        private PanelListener panelListener;
         private boolean initOpen;
 
         public SetupWizard(Context context) {
             this.context = context;
         }
 
-        public SetupWizard listener(PanelSlideListener panelSlideListener) {
-            this.panelSlideListener = panelSlideListener;
+        public SetupWizard listener(PanelListener panelListener) {
+            this.panelListener = panelListener;
             return this;
         }
 

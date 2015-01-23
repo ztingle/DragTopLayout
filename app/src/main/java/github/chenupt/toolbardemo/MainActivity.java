@@ -43,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
         // init DragTopLayout
         DragTopLayout.from(this)
                 .open()
-                .listener(new DragTopLayout.PanelSlideListener() {
+                .listener(new DragTopLayout.PanelListener() {
                     @Override
                     public void onPanelStateChanged(DragTopLayout.PanelState panelState) {
 
