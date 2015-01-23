@@ -22,6 +22,7 @@ import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -188,13 +189,10 @@ public class DragTopLayout extends FrameLayout {
             // 1 -> 2 -> 0
             if (state == ViewDragHelper.STATE_IDLE) {
                 if (wizard.panelListener != null) {
-                    switch (panelState) {
-                        case COLLAPSED:
-                            panelState = PanelState.EXPANDED;
-                            break;
-                        case EXPANDED:
-                            panelState = PanelState.COLLAPSED;
-                            break;
+                    if (contentTop > getPaddingTop()) {
+                        panelState = PanelState.EXPANDED;
+                    }else{
+                        panelState = PanelState.COLLAPSED;
                     }
                     wizard.panelListener.onPanelStateChanged(panelState);
                 }
@@ -214,9 +212,11 @@ public class DragTopLayout extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (shouldIntercept) {
-            return dragHelper.shouldInterceptTouchEvent(ev);
+            boolean b = dragHelper.shouldInterceptTouchEvent(ev);
+            Log.d("ddd", "onInterceptTouchEvent:" + b);
+            return b;
         } else {
-            return super.onInterceptTouchEvent(ev);
+            return false;
         }
     }
 
@@ -241,7 +241,7 @@ public class DragTopLayout extends FrameLayout {
         public void onRefresh();
     }
 
-    public class SimplePanelListener implements PanelListener {
+    public static class SimplePanelListener implements PanelListener {
 
         @Override
         public void onPanelStateChanged(PanelState panelState) {
