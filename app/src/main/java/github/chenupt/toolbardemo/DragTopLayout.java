@@ -18,6 +18,7 @@
 package github.chenupt.toolbardemo;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -70,8 +71,11 @@ public class DragTopLayout extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        dragContentView = findViewById(R.id.drag_content_view);
-        menuView = findViewById(R.id.menu_view);
+        if (getChildCount() < 2){
+            throw new RuntimeException("Content view must contains two child view.");
+        }
+        menuView = getChildAt(0);
+        dragContentView = getChildAt(1);
     }
 
 
@@ -91,12 +95,17 @@ public class DragTopLayout extends FrameLayout {
                 contentTop + dragContentView.getHeight());
     }
 
+    @SuppressWarnings("deprecation")
     private void openMenu() {
         ViewTreeObserver vto = menuView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                menuView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN){
+                    menuView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                }else{
+                    menuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
                 contentTop = menuHeight;
                 requestLayout();
             }
