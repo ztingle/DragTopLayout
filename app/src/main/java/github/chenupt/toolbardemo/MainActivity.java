@@ -39,7 +39,22 @@ public class MainActivity extends ActionBarActivity {
         toolbar.setTitle("ToolBar");
         setSupportActionBar(toolbar);
 
-        dragLayout.openMenu();
+
+        // init DragTopLayout
+        DragTopLayout.from(this)
+                .open()
+                .listener(new DragTopLayout.PanelSlideListener() {
+                    @Override
+                    public void onPanelStateChanged(DragTopLayout.PanelState panelState) {
+
+                    }
+
+                    @Override
+                    public void onSliding(float radio) {
+
+                    }
+                }).setup(dragLayout);
+
 
         adapter = new ModelListAdapter(this, getModelManager());
         listView.setAdapter(adapter);
