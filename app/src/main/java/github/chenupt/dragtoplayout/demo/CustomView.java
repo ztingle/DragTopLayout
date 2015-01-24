@@ -1,4 +1,4 @@
-package github.chenupt.toolbardemo;
+package github.chenupt.dragtoplayout.demo;
 
 import android.content.Context;
 import android.view.LayoutInflater;

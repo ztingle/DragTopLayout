@@ -9,7 +9,7 @@
  For more information, please refer to <http://unlicense.org/>
  */
 
-package github.chenupt.toolbardemo;
+package github.chenupt.dragtoplayout.demo;
 
 import android.util.Log;
 

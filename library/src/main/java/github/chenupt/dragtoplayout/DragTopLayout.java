@@ -15,7 +15,7 @@
  * imitations under the License.
  */
 
-package github.chenupt.toolbardemo;
+package github.chenupt.dragtoplayout;
 
 import android.content.Context;
 import android.os.Handler;

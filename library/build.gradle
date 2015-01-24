@@ -1,12 +1,11 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "github.chenupt.dragtoplayout.demo"
-        minSdkVersion 14
+        minSdkVersion 8
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
@@ -20,10 +19,6 @@ android {
 }
 
 dependencies {
-    compile project(':library')
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.github.chenupt.android:multiplemodel:1.1.0@aar'
-    compile 'de.greenrobot:eventbus:2.4.0'
-    compile 'com.google.guava:guava:18.0'
 }

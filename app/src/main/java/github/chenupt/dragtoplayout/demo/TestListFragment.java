@@ -14,7 +14,7 @@
  * imitations under the License.
  */
 
-package github.chenupt.toolbardemo;
+package github.chenupt.dragtoplayout.demo;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

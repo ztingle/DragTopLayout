@@ -18,25 +18,24 @@
             android:elevation="10dp"
             android:minHeight="?attr/actionBarSize" />
 
-        <github.chenupt.toolbardemo.DragTopLayout
-            android:background="@color/gray_dark"
+        <github.chenupt.dragtoplayout.DragTopLayout
+            android:background="@color/colorPrimaryLight"
             android:id="@+id/drag_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <!--menu view-->
             <LinearLayout
-                android:id="@+id/menu_view"
+                android:id="@+id/top_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
                 android:gravity="center"
-                android:background="@color/gray_dark"
+                android:background="@color/colorPrimaryLight"
                 android:orientation="vertical">
                 <TextView
                     android:id="@+id/text"
-                    android:text="Menu View"
-                    android:textColor="@color/white"
+                    android:text="Top View"
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="40dp"
                     android:layout_width="wrap_content"
@@ -73,6 +72,6 @@
                 </android.support.v4.view.ViewPager>
 
             </LinearLayout>
-        </github.chenupt.toolbardemo.DragTopLayout>
+        </github.chenupt.dragtoplayout.DragTopLayout>
     </LinearLayout>
 </RelativeLayout>

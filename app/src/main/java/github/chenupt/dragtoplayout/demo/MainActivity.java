@@ -1,4 +1,4 @@
-package github.chenupt.toolbardemo;
+package github.chenupt.dragtoplayout.demo;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -15,6 +15,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import github.chenupt.dragtoplayout.DragTopLayout;
 import github.chenupt.multiplemodel.viewpager.ModelPagerAdapter;
 import github.chenupt.multiplemodel.viewpager.PagerModelManager;
 

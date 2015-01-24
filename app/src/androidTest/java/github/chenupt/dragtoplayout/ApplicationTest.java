@@ -1,4 +1,4 @@
-package github.chenupt.toolbardemo;
+package github.chenupt.dragtoplayout;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
