@@ -4,5 +4,6 @@
     <string name="app_name">DragTopLayout</string>
     <string name="action_menu_icon">Show &amp; hide icon</string>
     <string name="action_toggle">Toggle</string>
+    <string name="action_about">About</string>
 
 </resources>
