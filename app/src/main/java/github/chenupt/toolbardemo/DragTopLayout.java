@@ -71,7 +71,7 @@ public class DragTopLayout extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        if (getChildCount() < 2){
+        if (getChildCount() < 2) {
             throw new RuntimeException("Content view must contains two child view at least.");
         }
         menuView = getChildAt(0);
@@ -87,13 +87,13 @@ public class DragTopLayout extends FrameLayout {
         int contentTopTemp = contentTop;
         resetMenuHeight();
 
-        if(wizard.initOpen){
-            wizard.initOpen = false;
+        if (!wizard.initOpen) {
+            wizard.initOpen = true;
             contentTop = getPaddingTop();
             contentTopTemp = getPaddingTop();
         }
 
-        menuView.layout(left,Math.min(0, contentTop - menuHeight), right, contentTop);
+        menuView.layout(left, Math.min(0, contentTop - menuHeight), right, contentTop);
         dragContentView.layout(
                 left,
                 contentTopTemp,
@@ -101,9 +101,9 @@ public class DragTopLayout extends FrameLayout {
                 contentTopTemp + dragContentView.getHeight());
     }
 
-    private void resetMenuHeight(){
-        if(menuHeight != menuView.getHeight()){
-            if(contentTop == menuHeight){
+    private void resetMenuHeight() {
+        if (menuHeight != menuView.getHeight()) {
+            if (contentTop == menuHeight) {
                 contentTop = menuView.getHeight();
                 handleSlide();
             }
@@ -111,11 +111,11 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
-    private void handleSlide(){
+    private void handleSlide() {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                dragHelper.smoothSlideViewTo(dragContentView, getPaddingLeft(),  contentTop);
+                dragHelper.smoothSlideViewTo(dragContentView, getPaddingLeft(), contentTop);
                 postInvalidate();
             }
         });
@@ -130,7 +130,18 @@ public class DragTopLayout extends FrameLayout {
         resetMenu(anim, 0);
     }
 
-    public void resetMenu(boolean anim, int top){
+    public void toggleMenu() {
+        switch (panelState) {
+            case COLLAPSED:
+                openMenu(true);
+                break;
+            case EXPANDED:
+                closeMenu(true);
+                break;
+        }
+    }
+
+    public void resetMenu(boolean anim, int top) {
         contentTop = top;
         if (anim) {
             dragHelper.smoothSlideViewTo(dragContentView, getPaddingLeft(), contentTop);
@@ -140,11 +151,11 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
-    public boolean isRefreshing(){
+    public boolean isRefreshing() {
         return isRefreshing;
     }
 
-    public void onRefreshComplete(){
+    public void onRefreshComplete() {
         isRefreshing = false;
     }
 
@@ -158,10 +169,10 @@ public class DragTopLayout extends FrameLayout {
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
             contentTop = top;
-            if (wizard.panelListener != null){
-                float radio = (float)contentTop / menuHeight;
+            if (wizard.panelListener != null) {
+                float radio = (float) contentTop / menuHeight;
                 wizard.panelListener.onSliding(radio);
-                if(radio > wizard.refreshRadio){
+                if (radio > wizard.refreshRadio) {
                     wizard.panelListener.onRefresh();
                     isRefreshing = true;
                 }
@@ -201,7 +212,7 @@ public class DragTopLayout extends FrameLayout {
                 if (wizard.panelListener != null) {
                     if (contentTop > getPaddingTop()) {
                         panelState = PanelState.EXPANDED;
-                    }else{
+                    } else {
                         panelState = PanelState.COLLAPSED;
                     }
                     wizard.panelListener.onPanelStateChanged(panelState);
@@ -239,13 +250,15 @@ public class DragTopLayout extends FrameLayout {
         this.shouldIntercept = shouldIntercept;
     }
 
-    private void setWizard(SetupWizard setupWizard){
+    private void setWizard(SetupWizard setupWizard) {
         this.wizard = setupWizard;
     }
 
     public interface PanelListener {
         public void onPanelStateChanged(PanelState panelState);
+
         public void onSliding(float radio);
+
         public void onRefresh();
     }
 
@@ -289,17 +302,17 @@ public class DragTopLayout extends FrameLayout {
             return this;
         }
 
-        public SetupWizard open(){
+        public SetupWizard open() {
             initOpen = true;
             return this;
         }
 
-        public SetupWizard setRefreshRadio(float radio){
+        public SetupWizard setRefreshRadio(float radio) {
             this.refreshRadio = radio;
             return this;
         }
 
-        public void setup(DragTopLayout dragTopLayout){
+        public void setup(DragTopLayout dragTopLayout) {
             dragTopLayout.setWizard(this);
         }
     }
