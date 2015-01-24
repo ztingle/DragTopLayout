@@ -23,7 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -61,12 +60,6 @@ public class TestListFragment extends Fragment {
 
         adapter = new ModelListAdapter(getActivity(), getModelManager());
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                dragLayout.openMenu(true);
-            }
-        });
 
         adapter.setList(getList());
         adapter.notifyDataSetChanged();
@@ -77,12 +70,9 @@ public class TestListFragment extends Fragment {
                 DebugLog.d("scrollState:" + scrollState);
                 if (listView.getChildCount() > 0) {
                     if (listView.getChildAt(0).getTop() >= 0) {
-//                        dragLayout.setTouchMode(true);
                         EventBus.getDefault().post(true);
-
                     } else {
                         EventBus.getDefault().post(false);
-//                        dragLayout.setTouchMode(false);
                     }
                 }
             }
@@ -91,34 +81,15 @@ public class TestListFragment extends Fragment {
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if (listView.getChildCount() > 0) {
                     if (listView.getChildAt(0).getTop() >= 0) {
-//                        dragLayout.setTouchMode(true);
                         EventBus.getDefault().post(true);
 
                     } else {
                         EventBus.getDefault().post(false);
-//                        dragLayout.setTouchMode(false);
                     }
                 }
             }
         });
 
-//        listView.setOnTouchListener(new View.OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (listView.getChildCount() > 0) {
-//                    if (listView.getChildAt(0).getTop() >= 0) {
-////                        dragLayout.setTouchMode(true);
-//                        EventBus.getDefault().post(false);
-//
-//                    } else {
-//                        EventBus.getDefault().post(true);
-////                        dragLayout.setTouchMode(false);
-//                        return true;
-//                    }
-//                }
-//                return false;
-//            }
-//        });
     }
 
     public ModelManager getModelManager() {

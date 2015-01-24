@@ -10,25 +10,28 @@
         android:background="@color/colorAccent"
         android:orientation="vertical">
 
-        <!--<android.support.v7.widget.Toolbar-->
-            <!--android:id="@+id/tool_bar"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:background="?attr/colorPrimary"-->
-            <!--android:elevation="10dp"-->
-            <!--android:minHeight="?attr/actionBarSize"/>-->
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:elevation="10dp"
+            android:minHeight="?attr/actionBarSize"/>
         <github.chenupt.toolbardemo.DragTopLayout
-            android:background="@color/white"
             android:id="@+id/drag_layout"
+            android:background="@color/colorPrimaryLight"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <LinearLayout
                 android:id="@+id/menu_view"
-                android:background="@color/colorPrimaryLight"
                 android:layout_width="match_parent"
                 android:gravity="center"
+                android:minHeight="100dp"
+                android:animateLayoutChanges="true"
                 android:layout_height="wrap_content">
                 <ImageView
+                    android:id="@+id/image_view"
+                    android:visibility="gone"
                     android:src="@drawable/ic_launcher"
                     android:layout_margin="60dp"
                     android:layout_gravity="center"

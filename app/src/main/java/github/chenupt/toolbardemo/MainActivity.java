@@ -1,10 +1,13 @@
 package github.chenupt.toolbardemo;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,24 +17,26 @@ import github.chenupt.multiplemodel.viewpager.ModelPagerAdapter;
 import github.chenupt.multiplemodel.viewpager.PagerModelManager;
 
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends ActionBarActivity {
 
-//    private Toolbar toolbar;
+    private Toolbar toolbar;
     private DragTopLayout dragLayout;
     private ModelPagerAdapter adapter;
     private ViewPager viewPager;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        toolbar = (Toolbar) findViewById(R.id.tool_bar);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         dragLayout = (DragTopLayout) findViewById(R.id.drag_layout);
+        imageView = (ImageView) findViewById(R.id.image_view);
 
-//        toolbar.setTitle("ToolBar");
-//        setSupportActionBar(toolbar);
+        toolbar.setTitle("ToolBar");
+        setSupportActionBar(toolbar);
 
 
         // init DragTopLayout
@@ -96,6 +101,12 @@ public class MainActivity extends FragmentActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            if(imageView.getVisibility() == View.GONE){
+                imageView.setVisibility(View.VISIBLE);
+            }else{
+                imageView.setVisibility(View.GONE);
+            }
+//            dragLayout.closeMenu(true);
             return true;
         }
 

@@ -18,14 +18,12 @@
 package github.chenupt.toolbardemo;
 
 import android.content.Context;
-import android.os.Build;
+import android.os.Handler;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 
@@ -74,7 +72,7 @@ public class DragTopLayout extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         if (getChildCount() < 2){
-            throw new RuntimeException("Content view must contains two child view.");
+            throw new RuntimeException("Content view must contains two child view at least.");
         }
         menuView = getChildAt(0);
         dragContentView = getChildAt(1);
@@ -86,33 +84,43 @@ public class DragTopLayout extends FrameLayout {
         super.onLayout(changed, left, top, right, bottom);
         dragRange = getHeight();
 
-        if (menuHeight == 0) {
-            menuHeight = menuView.getHeight();
+        int contentTopTemp = contentTop;
+        resetMenuHeight();
+
+        if(wizard.initOpen){
+            wizard.initOpen = false;
+            contentTop = getPaddingTop();
+            contentTopTemp = getPaddingTop();
         }
-        menuView.layout(left, Math.min(0, contentTop - menuHeight), right, contentTop);
+
+        menuView.layout(left,Math.min(0, contentTop - menuHeight), right, contentTop);
         dragContentView.layout(
                 left,
-                contentTop,
+                contentTopTemp,
                 right,
-                contentTop + dragContentView.getHeight());
+                contentTopTemp + dragContentView.getHeight());
     }
 
-    @SuppressWarnings("deprecation")
-    private void openMenu() {
-        ViewTreeObserver vto = menuView.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+    private void resetMenuHeight(){
+        if(menuHeight != menuView.getHeight()){
+            if(contentTop == menuHeight){
+                contentTop = menuView.getHeight();
+                handleSlide();
+            }
+            menuHeight = menuView.getHeight();
+        }
+    }
+
+    private void handleSlide(){
+        new Handler().post(new Runnable() {
             @Override
-            public void onGlobalLayout() {
-                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN){
-                    menuView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                }else{
-                    menuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                }
-                contentTop = menuHeight;
-                requestLayout();
+            public void run() {
+                dragHelper.smoothSlideViewTo(dragContentView, getPaddingLeft(),  contentTop);
+                postInvalidate();
             }
         });
     }
+
 
     public void openMenu(boolean anim) {
         resetMenu(anim, menuHeight);
@@ -125,11 +133,15 @@ public class DragTopLayout extends FrameLayout {
     public void resetMenu(boolean anim, int top){
         contentTop = top;
         if (anim) {
-            dragHelper.smoothSlideViewTo(dragContentView, 0, contentTop);
+            dragHelper.smoothSlideViewTo(dragContentView, getPaddingLeft(), contentTop);
             postInvalidate();
         } else {
             requestLayout();
         }
+    }
+
+    public boolean isRefreshing(){
+        return isRefreshing;
     }
 
     public void onRefreshComplete(){
@@ -149,12 +161,11 @@ public class DragTopLayout extends FrameLayout {
             if (wizard.panelListener != null){
                 float radio = (float)contentTop / menuHeight;
                 wizard.panelListener.onSliding(radio);
-                if(radio > 1.5f){
+                if(radio > wizard.refreshRadio){
                     wizard.panelListener.onRefresh();
                     isRefreshing = true;
                 }
             }
-            // 重新布局
             requestLayout();
         }
 
@@ -165,7 +176,6 @@ public class DragTopLayout extends FrameLayout {
 
         @Override
         public int clampViewPositionVertical(View child, int top, int dy) {
-            DebugLog.d("top:" + top + ", dy:" + dy + ", menuSize:" + menuHeight);
 //            return Math.min(menuHeight, Math.max(top, getPaddingTop()));
             return Math.max(top, getPaddingTop());
         }
@@ -173,7 +183,7 @@ public class DragTopLayout extends FrameLayout {
         @Override
         public void onViewReleased(View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
-            //yvel Fling产生的值，yvel > 0 则是快速往下Fling || yvel < 0 则是快速往上Fling
+            // yvel > 0 Fling down || yvel < 0 Fling up
             int top;
             if (yvel > 0 || contentTop > menuHeight) {
                 top = menuHeight + getPaddingTop();
@@ -212,9 +222,7 @@ public class DragTopLayout extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (shouldIntercept) {
-            boolean b = dragHelper.shouldInterceptTouchEvent(ev);
-            Log.d("ddd", "onInterceptTouchEvent:" + b);
-            return b;
+            return dragHelper.shouldInterceptTouchEvent(ev);
         } else {
             return false;
         }
@@ -270,6 +278,7 @@ public class DragTopLayout extends FrameLayout {
         private Context context;
         private PanelListener panelListener;
         private boolean initOpen;
+        private float refreshRadio = 1.5f;
 
         public SetupWizard(Context context) {
             this.context = context;
@@ -285,11 +294,13 @@ public class DragTopLayout extends FrameLayout {
             return this;
         }
 
+        public SetupWizard setRefreshRadio(float radio){
+            this.refreshRadio = radio;
+            return this;
+        }
+
         public void setup(DragTopLayout dragTopLayout){
             dragTopLayout.setWizard(this);
-            if(initOpen){
-                dragTopLayout.openMenu();
-            }
         }
     }
 
