@@ -16,38 +16,62 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:elevation="10dp"
-            android:minHeight="?attr/actionBarSize"/>
+            android:minHeight="?attr/actionBarSize" />
+
         <github.chenupt.toolbardemo.DragTopLayout
+            android:background="@color/gray_dark"
             android:id="@+id/drag_layout"
-            android:background="@color/colorPrimaryLight"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <!--menu view-->
             <LinearLayout
                 android:id="@+id/menu_view"
                 android:layout_width="match_parent"
-                android:gravity="center"
-                android:minHeight="100dp"
+                android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:id="@+id/image_view"
-                    android:visibility="gone"
-                    android:src="@drawable/ic_launcher"
-                    android:layout_margin="60dp"
+                android:gravity="center"
+                android:background="@color/gray_dark"
+                android:orientation="vertical"
+                android:minHeight="100dp">
+                <TextView
+                    android:text="Menu View"
                     android:layout_gravity="center"
+                    android:layout_margin="20dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+                <ImageView
+                    android:id="@+id/image_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="30dp"
+                    android:src="@drawable/ic_launcher"
+                    android:visibility="gone" />
             </LinearLayout>
-            <RelativeLayout
+
+            <!--content view-->
+            <LinearLayout
+                android:orientation="vertical"
                 android:id="@+id/drag_content_view"
-                android:background="@color/colorAccent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
                 <android.support.v4.view.ViewPager
                     android:id="@+id/view_pager"
+                    android:background="@color/white"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-            </RelativeLayout>
+                    android:layout_height="match_parent">
+
+                    <android.support.v4.view.PagerTabStrip
+                        android:id="@+id/pager_tab_strip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:background="@color/colorPrimaryLight" />
+                </android.support.v4.view.ViewPager>
+
+            </LinearLayout>
         </github.chenupt.toolbardemo.DragTopLayout>
     </LinearLayout>
 </RelativeLayout>
