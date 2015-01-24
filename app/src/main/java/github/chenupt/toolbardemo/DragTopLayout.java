@@ -29,7 +29,7 @@ import android.widget.FrameLayout;
 
 /**
  * Created by chenupt@gmail.com on 2015/1/18.
- * Description : Drag down to show a menu panel on the top like Google Calendar.
+ * Description : Drag down to show a menu panel on the top.
  */
 public class DragTopLayout extends FrameLayout {
 
@@ -87,6 +87,7 @@ public class DragTopLayout extends FrameLayout {
         int contentTopTemp = contentTop;
         resetMenuHeight();
 
+        // Clear the drag content top value so that menu could be collapsed.
         if (!wizard.initOpen) {
             wizard.initOpen = true;
             contentTop = getPaddingTop();
@@ -121,13 +122,12 @@ public class DragTopLayout extends FrameLayout {
         });
     }
 
-
     public void openMenu(boolean anim) {
-        resetMenu(anim, menuHeight);
+        resetDragContent(anim, menuHeight);
     }
 
     public void closeMenu(boolean anim) {
-        resetMenu(anim, 0);
+        resetDragContent(anim, 0);
     }
 
     public void toggleMenu() {
@@ -141,7 +141,7 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
-    public void resetMenu(boolean anim, int top) {
+    private void resetDragContent(boolean anim, int top) {
         contentTop = top;
         if (anim) {
             dragHelper.smoothSlideViewTo(dragContentView, getPaddingLeft(), contentTop);
@@ -151,10 +151,17 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
+    /**
+     * Get refresh state
+     * @return
+     */
     public boolean isRefreshing() {
         return isRefreshing;
     }
 
+    /**
+     * Complete refresh and reset the refresh state.
+     */
     public void onRefreshComplete() {
         isRefreshing = false;
     }
@@ -170,6 +177,7 @@ public class DragTopLayout extends FrameLayout {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
             contentTop = top;
             if (wizard.panelListener != null) {
+                // Calculate the radio while dragging.
                 float radio = (float) contentTop / menuHeight;
                 wizard.panelListener.onSliding(radio);
                 if (radio > wizard.refreshRadio) {
@@ -188,6 +196,7 @@ public class DragTopLayout extends FrameLayout {
         @Override
         public int clampViewPositionVertical(View child, int top, int dy) {
 //            return Math.min(menuHeight, Math.max(top, getPaddingTop()));
+            // Drag over the menu height.
             return Math.max(top, getPaddingTop());
         }
 
@@ -209,12 +218,13 @@ public class DragTopLayout extends FrameLayout {
         public void onViewDragStateChanged(int state) {
             // 1 -> 2 -> 0
             if (state == ViewDragHelper.STATE_IDLE) {
+                // Change the panel state while the drag content view is idle.
+                if (contentTop > getPaddingTop()) {
+                    panelState = PanelState.EXPANDED;
+                } else {
+                    panelState = PanelState.COLLAPSED;
+                }
                 if (wizard.panelListener != null) {
-                    if (contentTop > getPaddingTop()) {
-                        panelState = PanelState.EXPANDED;
-                    } else {
-                        panelState = PanelState.COLLAPSED;
-                    }
                     wizard.panelListener.onPanelStateChanged(panelState);
                 }
             }
@@ -232,11 +242,7 @@ public class DragTopLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (shouldIntercept) {
-            return dragHelper.shouldInterceptTouchEvent(ev);
-        } else {
-            return false;
-        }
+        return shouldIntercept && dragHelper.shouldInterceptTouchEvent(ev);
     }
 
     @Override
@@ -255,10 +261,22 @@ public class DragTopLayout extends FrameLayout {
     }
 
     public interface PanelListener {
+        /**
+         * Called while the panel state is changed.
+         * @param panelState
+         */
         public void onPanelStateChanged(PanelState panelState);
 
+        /**
+         * Called while dragging.
+         * radio >= 0.
+         * @param radio
+         */
         public void onSliding(float radio);
 
+        /**
+         * Called while the radio over refreshRadio.
+         */
         public void onRefresh();
     }
 
@@ -297,16 +315,30 @@ public class DragTopLayout extends FrameLayout {
             this.context = context;
         }
 
+        /**
+         * Setup the drag listener.
+         * @return SetupWizard
+         */
         public SetupWizard listener(PanelListener panelListener) {
             this.panelListener = panelListener;
             return this;
         }
 
+        /**
+         * Open the menu after the drag layout is created.
+         * The default value is false.
+         * @return SetupWizard
+         */
         public SetupWizard open() {
             initOpen = true;
             return this;
         }
 
+        /**
+         * Set the refresh position while dragging you want.
+         * The default value is 1.5f.
+         * @return SetupWizard
+         */
         public SetupWizard setRefreshRadio(float radio) {
             this.refreshRadio = radio;
             return this;

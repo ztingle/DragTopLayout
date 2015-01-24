@@ -5,6 +5,7 @@ import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,8 @@ import github.chenupt.multiplemodel.viewpager.PagerModelManager;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    public static final String TAG = "MainActivity";
 
     private Toolbar toolbar;
     private DragTopLayout dragLayout;
@@ -50,7 +53,7 @@ public class MainActivity extends ActionBarActivity {
                 .listener(new DragTopLayout.SimplePanelListener() {
                     @Override
                     public void onSliding(float radio) {
-
+                        Log.d(TAG, "sliding: " + radio);
                     }
                 }).setup(dragLayout);
 
