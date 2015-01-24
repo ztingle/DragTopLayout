@@ -42,9 +42,8 @@ public class MainActivity extends ActionBarActivity {
         imageView = (ImageView) findViewById(R.id.image_view);
         pagerTabStrip = (PagerTabStrip) findViewById(R.id.pager_tab_strip);
 
-        toolbar.setTitle("ToolBar");
+        toolbar.setTitle("DragTopLayout");
         setSupportActionBar(toolbar);
-
 
         // init DragTopLayout
         DragTopLayout.from(this)
