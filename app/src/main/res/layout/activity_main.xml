@@ -19,7 +19,7 @@
             android:minHeight="?attr/actionBarSize" />
 
         <github.chenupt.dragtoplayout.DragTopLayout
-            android:background="@color/colorPrimaryLight"
+            android:background="@color/gray_light"
             android:id="@+id/drag_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -31,7 +31,6 @@
                 android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
                 android:gravity="center"
-                android:background="@color/colorPrimaryLight"
                 android:orientation="vertical">
                 <TextView
                     android:id="@+id/text"
@@ -46,8 +45,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginBottom="20dp"
-                    android:src="@drawable/ic_launcher"
-                    android:visibility="gone" />
+                    android:src="@drawable/ic_launcher"/>
             </LinearLayout>
 
             <!--content view-->
