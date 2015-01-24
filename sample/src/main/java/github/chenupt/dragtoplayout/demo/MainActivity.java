@@ -16,6 +16,7 @@
 
 package github.chenupt.dragtoplayout.demo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
@@ -120,6 +121,8 @@ public class MainActivity extends ActionBarActivity {
             dragLayout.toggleMenu();
             return true;
         } else if(id == R.id.action_about){
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
             return true;
         }
 
