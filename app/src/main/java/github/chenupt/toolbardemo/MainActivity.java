@@ -1,101 +1,84 @@
 package github.chenupt.toolbardemo;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import github.chenupt.multiplemodel.ItemEntity;
-import github.chenupt.multiplemodel.ItemEntityCreator;
-import github.chenupt.multiplemodel.ModelListAdapter;
-import github.chenupt.multiplemodel.ModelManager;
-import github.chenupt.multiplemodel.ModelManagerBuilder;
+import de.greenrobot.event.EventBus;
+import github.chenupt.multiplemodel.viewpager.ModelPagerAdapter;
+import github.chenupt.multiplemodel.viewpager.PagerModelManager;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends FragmentActivity {
 
-    private Toolbar toolbar;
-    private ListView listView;
-    private ModelListAdapter adapter;
+//    private Toolbar toolbar;
     private DragTopLayout dragLayout;
+    private ModelPagerAdapter adapter;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        listView = (ListView) findViewById(R.id.list_view);
+//        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
         dragLayout = (DragTopLayout) findViewById(R.id.drag_layout);
 
-        toolbar.setTitle("ToolBar");
-        setSupportActionBar(toolbar);
+//        toolbar.setTitle("ToolBar");
+//        setSupportActionBar(toolbar);
 
-        dragLayout.openMenu();
-        dragLayout.setPanelSlideListener(new DragTopLayout.PanelSlideListener() {
-            @Override
-            public void onPanelCollapsed() {
 
-            }
+        // init DragTopLayout
+        DragTopLayout.from(this)
+                .open()
+                .listener(new DragTopLayout.SimplePanelListener() {
+                    @Override
+                    public void onPanelStateChanged(DragTopLayout.PanelState panelState) {
 
-            @Override
-            public void onSliding(float radio) {
-
-            }
-        });
-
-        adapter = new ModelListAdapter(this, getModelManager());
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                dragLayout.openMenu(true);
-            }
-        });
-
-        adapter.setList(getList());
-        adapter.notifyDataSetChanged();
-
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (view.getChildCount() > 0) {
-                    DebugLog.d("onScroll:" + view.getChildAt(0).getTop());
-                    if (view.getChildAt(0).getTop() >= 0) {
-                        dragLayout.setTouchMode(true);
-                    } else {
-                        dragLayout.setTouchMode(false);
                     }
-                }
-            }
-        });
+
+                    @Override
+                    public void onSliding(float radio) {
+
+                    }
+                }).setup(dragLayout);
+
+        PagerModelManager factory = new PagerModelManager();
+        factory.addCommonFragment(TestListFragment.class, getTitles());
+        adapter = new ModelPagerAdapter(getSupportFragmentManager(), factory);
+        viewPager.setAdapter(adapter);
     }
 
-    public ModelManager getModelManager() {
-        return ModelManagerBuilder.begin().addModel(CustomView.class).build(ModelManager.class);
+    private List<String> getTitles(){
+        List<String> list = new ArrayList<>();
+        list.add("dd");
+        list.add("dd");
+        return list;
     }
 
-    public List<ItemEntity> getList() {
-        List<ItemEntity> resultList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            ItemEntityCreator.create("").setModelView(CustomView.class).attach(resultList);
-        }
-        return resultList;
+
+
+    public void onEvent(Boolean b){
+        dragLayout.setTouchMode(b);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        EventBus.getDefault().unregister(this);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

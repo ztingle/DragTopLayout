@@ -1,6 +1,24 @@
+
+/*
+ * Copyright 2015 chenupt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * imitations under the License.
+ */
+
 package github.chenupt.toolbardemo;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
@@ -10,29 +28,29 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
+
 /**
  * Created by chenupt@gmail.com on 2015/1/18.
- * Description : Drag down to show a menu panel on the top.
+ * Description : Drag down to show a menu panel on the top like Google Calendar.
  */
 public class DragTopLayout extends FrameLayout {
 
-    public static final String TAG = "DragTopLayout";
-
+    private SetupWizard wizard;
     private ViewDragHelper dragHelper;
-    private int dragRange;  // 拖动范围
+    private int dragRange;
     private View dragContentView;
     private View menuView;
 
     private int contentTop;
-    private float radio;
+    private int menuHeight;
+    private boolean isRefreshing;
 
-    public enum PanelState {
+    public static enum PanelState {
         EXPANDED,
         COLLAPSED
     }
 
-    // 默认panel显示
-    private PanelState panelState = PanelState.EXPANDED;
+    private PanelState panelState = PanelState.COLLAPSED;
     private boolean shouldIntercept = true;
 
     public DragTopLayout(Context context) {
@@ -50,29 +68,28 @@ public class DragTopLayout extends FrameLayout {
 
     private void init() {
         dragHelper = ViewDragHelper.create(this, 1.0f, callback);
-        // 设置滚动速度
-        dragHelper.setMinVelocity(80);
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        dragContentView = findViewById(R.id.drag_content_view);
-        menuView = findViewById(R.id.menu_view);
+        if (getChildCount() < 2){
+            throw new RuntimeException("Content view must contains two child view.");
+        }
+        menuView = getChildAt(0);
+        dragContentView = getChildAt(1);
     }
 
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        dragRange = getHeight();
 
-        dragRange = getHeight();    // FIXME set menu size
-
-
-        menuView.setTop(contentTop - menuView.getHeight());
-        menuView.setBottom(contentTop);
-
-        // 根据手势的top, 设置子控件的位置，这里只有一个ViewGroup的继承类
+        if (menuHeight == 0) {
+            menuHeight = menuView.getHeight();
+        }
+        menuView.layout(left, Math.min(0, contentTop - menuHeight), right, contentTop);
         dragContentView.layout(
                 left,
                 contentTop,
@@ -80,20 +97,33 @@ public class DragTopLayout extends FrameLayout {
                 contentTop + dragContentView.getHeight());
     }
 
-    public void openMenu() {
+    @SuppressWarnings("deprecation")
+    private void openMenu() {
         ViewTreeObserver vto = menuView.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                menuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                contentTop = menuView.getHeight();
+                if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN){
+                    menuView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                }else{
+                    menuView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+                contentTop = menuHeight;
                 requestLayout();
             }
         });
     }
 
     public void openMenu(boolean anim) {
-        contentTop = menuView.getHeight();
+        resetMenu(anim, menuHeight);
+    }
+
+    public void closeMenu(boolean anim) {
+        resetMenu(anim, 0);
+    }
+
+    public void resetMenu(boolean anim, int top){
+        contentTop = top;
         if (anim) {
             dragHelper.smoothSlideViewTo(dragContentView, 0, contentTop);
             postInvalidate();
@@ -102,10 +132,9 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
-    public void toggleMenu(){
-        // TODO
+    public void onRefreshComplete(){
+        isRefreshing = false;
     }
-
 
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
         @Override
@@ -117,10 +146,13 @@ public class DragTopLayout extends FrameLayout {
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
             contentTop = top;
-            radio = (float)contentTop / menuView.getHeight();
-            if (panelSlideListener != null) {
-                DebugLog.d("radio:" + radio);
-                panelSlideListener.onSliding(radio);
+            if (wizard.panelListener != null){
+                float radio = (float)contentTop / menuHeight;
+                wizard.panelListener.onSliding(radio);
+                if(radio > 1.5f){
+                    wizard.panelListener.onRefresh();
+                    isRefreshing = true;
+                }
             }
             // 重新布局
             requestLayout();
@@ -133,44 +165,36 @@ public class DragTopLayout extends FrameLayout {
 
         @Override
         public int clampViewPositionVertical(View child, int top, int dy) {
-            DebugLog.d("top:" + top + ", dy:" + dy + ", menuSize:" + menuView.getHeight());
-            int menuSize = menuView.getHeight();
-            return Math.min(menuSize, Math.max(top, getPaddingTop()));
-//            return Math.max(top, getPaddingTop());
+            DebugLog.d("top:" + top + ", dy:" + dy + ", menuSize:" + menuHeight);
+//            return Math.min(menuHeight, Math.max(top, getPaddingTop()));
+            return Math.max(top, getPaddingTop());
         }
 
         @Override
         public void onViewReleased(View releasedChild, float xvel, float yvel) {
             super.onViewReleased(releasedChild, xvel, yvel);
-            Log.i(TAG, "onViewReleased:" + "xvel:" + xvel + ",yvel:" + yvel);
             //yvel Fling产生的值，yvel > 0 则是快速往下Fling || yvel < 0 则是快速往上Fling
             int top;
-            if (yvel > 0) {
-                top = menuView.getHeight() + getPaddingTop();
+            if (yvel > 0 || contentTop > menuHeight) {
+                top = menuHeight + getPaddingTop();
             } else {
                 top = getPaddingTop();
             }
-//            // 设置捕获的drag view 的位置
-            DebugLog.d("top:" + top + ", left:" + releasedChild.getLeft());
-            dragHelper.settleCapturedViewAt(releasedChild.getLeft(), top);     // 有滑动的效果
+            dragHelper.settleCapturedViewAt(releasedChild.getLeft(), top);
             postInvalidate();
         }
 
         @Override
         public void onViewDragStateChanged(int state) {
             // 1 -> 2 -> 0
-            Log.d(TAG, "onViewDragStateChanged:" + state);
-
             if (state == ViewDragHelper.STATE_IDLE) {
-                setTouchMode(true);
-                if (radio == 0){
-                    panelState = PanelState.COLLAPSED;
-                    setTouchMode(false);
-                } else if(radio == 1.0f){
-                    panelState = PanelState.EXPANDED;
-                }
-                if (panelSlideListener != null) {
-                    panelSlideListener.onPanelCollapsed();  // 当panel收起时回调
+                if (wizard.panelListener != null) {
+                    if (contentTop > getPaddingTop()) {
+                        panelState = PanelState.EXPANDED;
+                    }else{
+                        panelState = PanelState.COLLAPSED;
+                    }
+                    wizard.panelListener.onPanelStateChanged(panelState);
                 }
             }
             super.onViewDragStateChanged(state);
@@ -180,7 +204,6 @@ public class DragTopLayout extends FrameLayout {
 
     @Override
     public void computeScroll() {
-        // 滑动
         if (dragHelper.continueSettling(true)) {
             ViewCompat.postInvalidateOnAnimation(this);
         }
@@ -189,9 +212,11 @@ public class DragTopLayout extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         if (shouldIntercept) {
-            return dragHelper.shouldInterceptTouchEvent(ev);
+            boolean b = dragHelper.shouldInterceptTouchEvent(ev);
+            Log.d("ddd", "onInterceptTouchEvent:" + b);
+            return b;
         } else {
-            return super.onInterceptTouchEvent(ev);
+            return false;
         }
     }
 
@@ -206,20 +231,66 @@ public class DragTopLayout extends FrameLayout {
         this.shouldIntercept = shouldIntercept;
     }
 
-    public void setPanelState(PanelState panelState) {
-        this.panelState = panelState;
+    private void setWizard(SetupWizard setupWizard){
+        this.wizard = setupWizard;
     }
 
-    // 设置回调接口
-    private PanelSlideListener panelSlideListener;
-
-    public interface PanelSlideListener {
-        public void onPanelCollapsed();
+    public interface PanelListener {
+        public void onPanelStateChanged(PanelState panelState);
         public void onSliding(float radio);
+        public void onRefresh();
     }
 
-    public void setPanelSlideListener(PanelSlideListener panelSlideListener) {
-        this.panelSlideListener = panelSlideListener;
+    public static class SimplePanelListener implements PanelListener {
+
+        @Override
+        public void onPanelStateChanged(PanelState panelState) {
+
+        }
+
+        @Override
+        public void onSliding(float radio) {
+
+        }
+
+        @Override
+        public void onRefresh() {
+
+        }
+    }
+
+
+    // -----------------
+
+    public static SetupWizard from(Context context) {
+        return new SetupWizard(context);
+    }
+
+    public static final class SetupWizard {
+        private Context context;
+        private PanelListener panelListener;
+        private boolean initOpen;
+
+        public SetupWizard(Context context) {
+            this.context = context;
+        }
+
+        public SetupWizard listener(PanelListener panelListener) {
+            this.panelListener = panelListener;
+            return this;
+        }
+
+        public SetupWizard open(){
+            initOpen = true;
+            return this;
+        }
+
+        public void setup(DragTopLayout dragTopLayout){
+            dragTopLayout.setWizard(this);
+            if(initOpen){
+                dragTopLayout.openMenu();
+            }
+        }
     }
 
 
