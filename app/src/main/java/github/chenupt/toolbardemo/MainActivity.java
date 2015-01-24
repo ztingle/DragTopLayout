@@ -1,7 +1,6 @@
 package github.chenupt.toolbardemo;
 
 import android.os.Bundle;
-import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -28,8 +27,8 @@ public class MainActivity extends ActionBarActivity {
     private DragTopLayout dragLayout;
     private ModelPagerAdapter adapter;
     private ViewPager viewPager;
-    private ImageView imageView;
-    private PagerTabStrip pagerTabStrip;
+
+    private ImageView menuImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +38,7 @@ public class MainActivity extends ActionBarActivity {
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         dragLayout = (DragTopLayout) findViewById(R.id.drag_layout);
-        imageView = (ImageView) findViewById(R.id.image_view);
-        pagerTabStrip = (PagerTabStrip) findViewById(R.id.pager_tab_strip);
+        menuImageView = (ImageView) findViewById(R.id.image_view);
 
         toolbar.setTitle("DragTopLayout");
         setSupportActionBar(toolbar);
@@ -95,10 +93,10 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_menu_icon) {
-            if(imageView.getVisibility() == View.GONE){
-                imageView.setVisibility(View.VISIBLE);
+            if(menuImageView.getVisibility() == View.GONE){
+                menuImageView.setVisibility(View.VISIBLE);
             }else{
-                imageView.setVisibility(View.GONE);
+                menuImageView.setVisibility(View.GONE);
             }
             return true;
         } else if(id == R.id.action_toggle){

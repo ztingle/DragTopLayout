@@ -106,17 +106,17 @@ public class DragTopLayout extends FrameLayout {
         if (menuHeight != menuView.getHeight()) {
             if (contentTop == menuHeight) {
                 contentTop = menuView.getHeight();
-                handleSlide();
+                handleSlide(menuView.getHeight());
             }
             menuHeight = menuView.getHeight();
         }
     }
 
-    private void handleSlide() {
+    private void handleSlide(final int top) {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                dragHelper.smoothSlideViewTo(dragContentView, getPaddingLeft(), contentTop);
+                dragHelper.smoothSlideViewTo(dragContentView, getPaddingLeft(), top);
                 postInvalidate();
             }
         });
@@ -166,6 +166,18 @@ public class DragTopLayout extends FrameLayout {
         isRefreshing = false;
     }
 
+    private void calculateRadio(float top){
+        if (wizard.panelListener != null) {
+            // Calculate the radio while dragging.
+            float radio = top / menuHeight;
+            wizard.panelListener.onSliding(radio);
+            if (radio > wizard.refreshRadio) {
+                wizard.panelListener.onRefresh();
+                isRefreshing = true;
+            }
+        }
+    }
+
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
@@ -176,16 +188,8 @@ public class DragTopLayout extends FrameLayout {
         public void onViewPositionChanged(View changedView, int left, int top, int dx, int dy) {
             super.onViewPositionChanged(changedView, left, top, dx, dy);
             contentTop = top;
-            if (wizard.panelListener != null) {
-                // Calculate the radio while dragging.
-                float radio = (float) contentTop / menuHeight;
-                wizard.panelListener.onSliding(radio);
-                if (radio > wizard.refreshRadio) {
-                    wizard.panelListener.onRefresh();
-                    isRefreshing = true;
-                }
-            }
             requestLayout();
+            calculateRadio(contentTop);
         }
 
         @Override
@@ -258,6 +262,14 @@ public class DragTopLayout extends FrameLayout {
 
     private void setWizard(SetupWizard setupWizard) {
         this.wizard = setupWizard;
+
+        if (wizard.panelListener != null){
+            if (wizard.initOpen) {
+                wizard.panelListener.onSliding(1.0f);
+            }else{
+                wizard.panelListener.onSliding(0f);
+            }
+        }
     }
 
     public interface PanelListener {
