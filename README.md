@@ -11,7 +11,7 @@ Usage
 
 ```
     dependencies {
-	    compile 'com.getbase:floatingactionbutton:1.6.0'
+	    compile 'com.github.chenupt.android:dragtoplayout:1.0.0@aar'
 	}
 ```
   2. Add the DragTopLayout in your layout file.
