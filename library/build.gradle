@@ -27,6 +27,7 @@ dependencies {
 
 
 // -----
+
 apply plugin: 'signing'
 apply plugin: 'maven'
 
