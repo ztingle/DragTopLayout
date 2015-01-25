@@ -11,11 +11,14 @@
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/tool_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             android:elevation="10dp"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:minHeight="?attr/actionBarSize" />
 
         <github.chenupt.dragtoplayout.DragTopLayout
@@ -35,6 +38,8 @@
                 <TextView
                     android:id="@+id/text"
                     android:text="Top View"
+                    android:textSize="18sp"
+                    android:textColor="@color/white"
                     android:layout_gravity="center_horizontal"
                     android:layout_margin="40dp"
                     android:layout_width="wrap_content"
