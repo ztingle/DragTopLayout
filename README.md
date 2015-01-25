@@ -7,14 +7,14 @@ pic
 
 Usage
 ---
-  1. Add the dependency to your build.gradle:
+Add the dependency to your build.gradle:
 
 ```
     dependencies {
 	    compile 'com.github.chenupt.android:dragtoplayout:1.0.0@aar'
 	}
 ```
-  2. Add the DragTopLayout in your layout file.
+Add the DragTopLayout in your layout file.
 
 ```xml
 		<github.chenupt.dragtoplayout.DragTopLayout
@@ -40,7 +40,7 @@ Usage
             
         </github.chenupt.dragtoplayout.DragTopLayout>
 ```
- 3. Init the DragTopLayout in your activity code.
+Init the DragTopLayout in your activity code.
 ```java
 DragTopLayout.from(this)
 	.open()
@@ -50,6 +50,7 @@ DragTopLayout.from(this)
 	}).setup(dragLayout);
 ```
 Developed By
+---
  * Chenupt - <chenupt@outlook.com>
 
 License
