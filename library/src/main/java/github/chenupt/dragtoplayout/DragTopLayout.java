@@ -88,7 +88,7 @@ public class DragTopLayout extends FrameLayout {
         resetMenuHeight();
 
         // Clear the drag content top value so that menu could be collapsed.
-        if (!wizard.initOpen) {
+        if (panelState == PanelState.COLLAPSED) {
             wizard.initOpen = true;
             contentTop = getPaddingTop();
             contentTopTemp = getPaddingTop();
@@ -276,8 +276,10 @@ public class DragTopLayout extends FrameLayout {
 
         if (wizard.panelListener != null){
             if (wizard.initOpen) {
+                panelState = PanelState.EXPANDED;
                 wizard.panelListener.onSliding(1.0f);
             }else{
+                panelState = PanelState.COLLAPSED;
                 wizard.panelListener.onSliding(0f);
             }
         }
