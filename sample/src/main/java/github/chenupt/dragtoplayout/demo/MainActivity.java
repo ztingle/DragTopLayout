@@ -120,6 +120,9 @@ public class MainActivity extends ActionBarActivity {
         } else if(id == R.id.action_toggle){
             dragLayout.toggleMenu();
             return true;
+        } else if(id == R.id.action_over_drag){
+            dragLayout.setOverDrag(!dragLayout.isOverDrag());
+            return true;
         } else if(id == R.id.action_about){
             Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);

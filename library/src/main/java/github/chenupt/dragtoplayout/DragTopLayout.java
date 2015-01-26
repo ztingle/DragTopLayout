@@ -151,6 +151,14 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
+    public void setOverDrag(boolean overDrag){
+        wizard.overDrag = overDrag;
+    }
+
+    public boolean isOverDrag(){
+        return wizard.overDrag;
+    }
+
     /**
      * Get refresh state
      * @return
@@ -199,9 +207,12 @@ public class DragTopLayout extends FrameLayout {
 
         @Override
         public int clampViewPositionVertical(View child, int top, int dy) {
-//            return Math.min(menuHeight, Math.max(top, getPaddingTop()));
-            // Drag over the menu height.
-            return Math.max(top, getPaddingTop());
+            if (wizard.overDrag) {
+                // Drag over the menu height.
+                return Math.max(top, getPaddingTop());
+            }else{
+                return Math.min(menuHeight, Math.max(top, getPaddingTop()));
+            }
         }
 
         @Override
@@ -322,6 +333,7 @@ public class DragTopLayout extends FrameLayout {
         private PanelListener panelListener;
         private boolean initOpen;
         private float refreshRadio = 1.5f;
+        private boolean overDrag = true;
 
         public SetupWizard(Context context) {
             this.context = context;
@@ -353,6 +365,11 @@ public class DragTopLayout extends FrameLayout {
          */
         public SetupWizard setRefreshRadio(float radio) {
             this.refreshRadio = radio;
+            return this;
+        }
+
+        public SetupWizard setOverDrag(boolean overDrag) {
+            this.overDrag = overDrag;
             return this;
         }
 
