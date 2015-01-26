@@ -26,4 +26,5 @@ dependencies {
     compile 'com.github.chenupt.android:multiplemodel:1.1.0@aar'
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.google.guava:guava:18.0'
+    compile 'com.jpardogo.materialtabstrip:library:1.0.8'
 }

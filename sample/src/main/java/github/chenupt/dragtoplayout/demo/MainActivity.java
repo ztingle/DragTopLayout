@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.astuetz.PagerSlidingTabStrip;
 import com.google.common.collect.Lists;
 
 import java.util.List;
@@ -45,6 +46,7 @@ public class MainActivity extends ActionBarActivity {
     private DragTopLayout dragLayout;
     private ModelPagerAdapter adapter;
     private ViewPager viewPager;
+    private PagerSlidingTabStrip pagerSlidingTabStrip;
 
     private ImageView menuImageView;
 
@@ -57,6 +59,7 @@ public class MainActivity extends ActionBarActivity {
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         dragLayout = (DragTopLayout) findViewById(R.id.drag_layout);
         menuImageView = (ImageView) findViewById(R.id.image_view);
+        pagerSlidingTabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
 
         toolbar.setTitle("DragTopLayout");
         setSupportActionBar(toolbar);
@@ -77,6 +80,7 @@ public class MainActivity extends ActionBarActivity {
         factory.addCommonFragment(TestListFragment.class, getTitles(), getTitles());
         adapter = new ModelPagerAdapter(getSupportFragmentManager(), factory);
         viewPager.setAdapter(adapter);
+        pagerSlidingTabStrip.setViewPager(viewPager);
     }
 
     private List<String> getTitles(){
