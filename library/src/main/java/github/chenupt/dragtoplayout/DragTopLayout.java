@@ -171,7 +171,7 @@ public class DragTopLayout extends FrameLayout {
             // Calculate the radio while dragging.
             float radio = top / menuHeight;
             wizard.panelListener.onSliding(radio);
-            if (radio > wizard.refreshRadio) {
+            if (radio > wizard.refreshRadio && !isRefreshing) {
                 wizard.panelListener.onRefresh();
                 isRefreshing = true;
             }
