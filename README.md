@@ -21,28 +21,28 @@ Add the dependency to your build.gradle.
 Add the DragTopLayout in your layout.
 
 ```xml
-		<github.chenupt.dragtoplayout.DragTopLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+ <github.chenupt.dragtoplayout.DragTopLayout
+     android:layout_width="match_parent"
+     android:layout_height="match_parent">
 
-            <!--menu view-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-                ...
-            </LinearLayout>
+     <!--menu view-->
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:gravity="center"
+         android:orientation="vertical">
+         ...
+     </LinearLayout>
 
-            <!--content view-->
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-	           ...
-            </LinearLayout>
-            
-        </github.chenupt.dragtoplayout.DragTopLayout>
+     <!--content view-->
+     <LinearLayout
+         android:orientation="vertical"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent">
+         ...
+     </LinearLayout>
+
+ </github.chenupt.dragtoplayout.DragTopLayout>
 ```
 Init the DragTopLayout in your activity code.
 ```java
