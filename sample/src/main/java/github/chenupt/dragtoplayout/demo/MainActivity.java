@@ -48,7 +48,7 @@ public class MainActivity extends ActionBarActivity {
     private ViewPager viewPager;
     private PagerSlidingTabStrip pagerSlidingTabStrip;
 
-    private ImageView menuImageView;
+    private ImageView topImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class MainActivity extends ActionBarActivity {
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         dragLayout = (DragTopLayout) findViewById(R.id.drag_layout);
-        menuImageView = (ImageView) findViewById(R.id.image_view);
+        topImageView = (ImageView) findViewById(R.id.image_view);
         pagerSlidingTabStrip = (PagerSlidingTabStrip) findViewById(R.id.tabs);
 
         toolbar.setTitle("DragTopLayout");
@@ -66,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
 
         // init DragTopLayout
         DragTopLayout.from(this)
-//                .open()
+                .open()
                 .setRefreshRadio(1.4f)
                 .listener(new DragTopLayout.SimplePanelListener() {
                     @Override
@@ -115,10 +115,10 @@ public class MainActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_menu_icon) {
-            if(menuImageView.getVisibility() == View.GONE){
-                menuImageView.setVisibility(View.VISIBLE);
+            if(topImageView.getVisibility() == View.GONE){
+                topImageView.setVisibility(View.VISIBLE);
             }else{
-                menuImageView.setVisibility(View.GONE);
+                topImageView.setVisibility(View.GONE);
             }
             return true;
         } else if(id == R.id.action_toggle){
