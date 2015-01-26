@@ -63,7 +63,7 @@ public class MainActivity extends ActionBarActivity {
 
         // init DragTopLayout
         DragTopLayout.from(this)
-                .open()
+//                .open()
                 .setRefreshRadio(1.4f)
                 .listener(new DragTopLayout.SimplePanelListener() {
                     @Override

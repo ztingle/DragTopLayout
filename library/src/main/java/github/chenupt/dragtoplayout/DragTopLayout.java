@@ -37,15 +37,16 @@ public class DragTopLayout extends FrameLayout {
     private ViewDragHelper dragHelper;
     private int dragRange;
     private View dragContentView;
-    private View menuView;
+    private View topView;
 
     private int contentTop;
-    private int menuHeight;
+    private int topViewHeight;
     private boolean isRefreshing;
 
     public static enum PanelState {
         EXPANDED,
-        COLLAPSED
+        COLLAPSED,
+        SLIDING
     }
 
     private PanelState panelState = PanelState.COLLAPSED;
@@ -74,7 +75,7 @@ public class DragTopLayout extends FrameLayout {
         if (getChildCount() < 2) {
             throw new RuntimeException("Content view must contains two child view at least.");
         }
-        menuView = getChildAt(0);
+        topView = getChildAt(0);
         dragContentView = getChildAt(1);
     }
 
@@ -84,31 +85,25 @@ public class DragTopLayout extends FrameLayout {
         super.onLayout(changed, left, top, right, bottom);
         dragRange = getHeight();
 
-        int contentTopTemp = contentTop;
-        resetMenuHeight();
+        resetTopViewHeight();
 
-        // Clear the drag content top value so that menu could be collapsed.
-        if (panelState == PanelState.COLLAPSED) {
-            wizard.initOpen = true;
-            contentTop = getPaddingTop();
-            contentTopTemp = getPaddingTop();
-        }
-
-        menuView.layout(left, Math.min(0, contentTop - menuHeight), right, contentTop);
+        topView.layout(left, Math.min(0, contentTop - topViewHeight), right, contentTop);
         dragContentView.layout(
                 left,
-                contentTopTemp,
+                contentTop,
                 right,
-                contentTopTemp + dragContentView.getHeight());
+                contentTop + dragContentView.getHeight());
     }
 
-    private void resetMenuHeight() {
-        if (menuHeight != menuView.getHeight()) {
-            if (contentTop == menuHeight) {
-                contentTop = menuView.getHeight();
-                handleSlide(menuView.getHeight());
+    private void resetTopViewHeight() {
+        int newMenuHeight = topView.getHeight();
+        // Top layout is changed
+        if (topViewHeight != newMenuHeight) {
+            if (panelState == PanelState.EXPANDED) {
+                contentTop = newMenuHeight;
+                handleSlide(newMenuHeight);
             }
-            menuHeight = menuView.getHeight();
+            topViewHeight = newMenuHeight;
         }
     }
 
@@ -123,7 +118,7 @@ public class DragTopLayout extends FrameLayout {
     }
 
     public void openMenu(boolean anim) {
-        resetDragContent(anim, menuHeight);
+        resetDragContent(anim, topViewHeight);
     }
 
     public void closeMenu(boolean anim) {
@@ -167,6 +162,10 @@ public class DragTopLayout extends FrameLayout {
         return isRefreshing;
     }
 
+    public void setRefreshing(boolean isRefreshing){
+        this.isRefreshing = isRefreshing;
+    }
+
     /**
      * Complete refresh and reset the refresh state.
      */
@@ -177,7 +176,7 @@ public class DragTopLayout extends FrameLayout {
     private void calculateRadio(float top){
         if (wizard.panelListener != null) {
             // Calculate the radio while dragging.
-            float radio = top / menuHeight;
+            float radio = top / topViewHeight;
             wizard.panelListener.onSliding(radio);
             if (radio > wizard.refreshRadio && !isRefreshing) {
                 wizard.panelListener.onRefresh();
@@ -211,7 +210,7 @@ public class DragTopLayout extends FrameLayout {
                 // Drag over the menu height.
                 return Math.max(top, getPaddingTop());
             }else{
-                return Math.min(menuHeight, Math.max(top, getPaddingTop()));
+                return Math.min(topViewHeight, Math.max(top, getPaddingTop()));
             }
         }
 
@@ -220,8 +219,8 @@ public class DragTopLayout extends FrameLayout {
             super.onViewReleased(releasedChild, xvel, yvel);
             // yvel > 0 Fling down || yvel < 0 Fling up
             int top;
-            if (yvel > 0 || contentTop > menuHeight) {
-                top = menuHeight + getPaddingTop();
+            if (yvel > 0 || contentTop > topViewHeight) {
+                top = topViewHeight + getPaddingTop();
             } else {
                 top = getPaddingTop();
             }
@@ -242,6 +241,8 @@ public class DragTopLayout extends FrameLayout {
                 if (wizard.panelListener != null) {
                     wizard.panelListener.onPanelStateChanged(panelState);
                 }
+            }else{
+                panelState = PanelState.SLIDING;
             }
             super.onViewDragStateChanged(state);
         }
@@ -271,7 +272,7 @@ public class DragTopLayout extends FrameLayout {
         this.shouldIntercept = shouldIntercept;
     }
 
-    private void setWizard(SetupWizard setupWizard) {
+    private void setupWizard(SetupWizard setupWizard) {
         this.wizard = setupWizard;
 
         if (wizard.panelListener != null){
@@ -376,7 +377,7 @@ public class DragTopLayout extends FrameLayout {
         }
 
         public void setup(DragTopLayout dragTopLayout) {
-            dragTopLayout.setWizard(this);
+            dragTopLayout.setupWizard(this);
         }
     }
 
