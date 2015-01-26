@@ -14,9 +14,9 @@ Usage
 Add the dependency to your build.gradle.
 
 ```
-    dependencies {
-	    compile 'com.github.chenupt.android:dragtoplayout:1.0.0@aar'
-	}
+dependencies {
+    compile 'com.github.chenupt.android:dragtoplayout:1.0.0@aar'
+}
 ```
 Add the DragTopLayout in your layout.
 
@@ -47,11 +47,11 @@ Add the DragTopLayout in your layout.
 Init the DragTopLayout in your activity code.
 ```java
 DragTopLayout.from(this)
-	.open()
-	.setRefreshRadio(1.4f)
-	.listener(new DragTopLayout.SimplePanelListener() {
-		...
-	}).setup(dragLayout);
+        .open()
+        .setRefreshRadio(1.4f)
+        .listener(new DragTopLayout.SimplePanelListener() {
+        ...
+        }).setup(dragLayout);
 ```
 Developed By
 ---
