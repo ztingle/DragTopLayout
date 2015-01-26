@@ -85,25 +85,27 @@ public class DragTopLayout extends FrameLayout {
         super.onLayout(changed, left, top, right, bottom);
         dragRange = getHeight();
 
+        // In case of sliding
+        int contentTopTemp = contentTop;
         resetTopViewHeight();
 
         topView.layout(left, Math.min(0, contentTop - topViewHeight), right, contentTop);
         dragContentView.layout(
                 left,
-                contentTop,
+                contentTopTemp,
                 right,
-                contentTop + dragContentView.getHeight());
+                contentTopTemp + dragContentView.getHeight());
     }
 
     private void resetTopViewHeight() {
-        int newMenuHeight = topView.getHeight();
+        int newTopHeight = topView.getHeight();
         // Top layout is changed
-        if (topViewHeight != newMenuHeight) {
+        if (topViewHeight != newTopHeight) {
             if (panelState == PanelState.EXPANDED) {
-                contentTop = newMenuHeight;
-                handleSlide(newMenuHeight);
+                contentTop = newTopHeight;
+                handleSlide(newTopHeight);
             }
-            topViewHeight = newMenuHeight;
+            topViewHeight = newTopHeight;
         }
     }
 
