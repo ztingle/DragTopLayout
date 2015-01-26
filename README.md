@@ -1,53 +1,57 @@
 DragTopLayout
 ---
-Sometimes we need to show a top view above the ViewPager or ListView, just like Google Calendar or Google Contact. DragTopLayout is a ViewGroup that contains a content view and a top menu view. You can show the top menu view just drag down the content view at the right time. Or drag it up to fold.
+![icon](https://raw.githubusercontent.com/chenupt/DragTopLayout/master/imgs/icon.png)
+
+
+Sometimes we need to show a top view above a ViewPager or ListView, just like Google Calendar and Google Contact. DragTopLayout is a ViewGroup that contains a content view and a top menu view. You can show the top menu view just drag down the content view at the right time, or drag it up to fold.
 
 Here is a show case:
-pic
+
+![gif](https://raw.githubusercontent.com/chenupt/DragTopLayout/master/imgs/dragtop.gif)
 
 Usage
 ---
 Add the dependency to your build.gradle.
 
 ```
-    dependencies {
-	    compile 'com.github.chenupt.android:dragtoplayout:1.0.0@aar'
-	}
+dependencies {
+    compile 'com.github.chenupt.android:dragtoplayout:1.0.1@aar'
+}
 ```
 Add the DragTopLayout in your layout.
 
 ```xml
-		<github.chenupt.dragtoplayout.DragTopLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+ <github.chenupt.dragtoplayout.DragTopLayout
+     android:layout_width="match_parent"
+     android:layout_height="match_parent">
 
-            <!--menu view-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
-                ...
-            </LinearLayout>
+     <!--menu view-->
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:gravity="center"
+         android:orientation="vertical">
+         ...
+     </LinearLayout>
 
-            <!--content view-->
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-	           ...
-            </LinearLayout>
-            
-        </github.chenupt.dragtoplayout.DragTopLayout>
+     <!--content view-->
+     <LinearLayout
+         android:orientation="vertical"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent">
+         ...
+     </LinearLayout>
+
+ </github.chenupt.dragtoplayout.DragTopLayout>
 ```
 Init the DragTopLayout in your activity code.
 ```java
 DragTopLayout.from(this)
-	.open()
-	.setRefreshRadio(1.4f)
-	.listener(new DragTopLayout.SimplePanelListener() {
-		...
-	}).setup(dragLayout);
+        .open()
+        .setRefreshRadio(1.4f)
+        .listener(new DragTopLayout.SimplePanelListener() {
+        ...
+        }).setup(dragLayout);
 ```
 Developed By
 ---
