@@ -3,7 +3,7 @@ DragTopLayout
 ![icon](https://raw.githubusercontent.com/chenupt/DragTopLayout/master/imgs/icon.png)
 
 
-Sometimes we need to show a top view above the ViewPager or ListView, just like Google Calendar or Google Contact. DragTopLayout is a ViewGroup that contains a content view and a top menu view. You can show the top menu view just drag down the content view at the right time. Or drag it up to fold.
+Sometimes we need to show a top view above a ViewPager or ListView, just like Google Calendar and Google Contact. DragTopLayout is a ViewGroup that contains a content view and a top menu view. You can show the top menu view just drag down the content view at the right time, or drag it up to fold.
 
 Here is a show case:
 
