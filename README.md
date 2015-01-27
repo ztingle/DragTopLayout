@@ -7,7 +7,7 @@ Sometimes we need to show a top view above a ViewPager or ListView, just like Go
 
 Here is a show case:
 
-![gif](https://raw.githubusercontent.com/chenupt/DragTopLayout/master/imgs/dragtop.gif)
+![gif](https://raw.githubusercontent.com/chenupt/DragTopLayout/master/imgs/dragtop_1.0.2.gif)
 
 Usage
 ---
@@ -25,7 +25,7 @@ Add the DragTopLayout in your layout.
      android:layout_width="match_parent"
      android:layout_height="match_parent">
 
-     <!--menu view-->
+     <!--top view-->
      <LinearLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
