@@ -122,7 +122,7 @@ public class MainActivity extends ActionBarActivity {
             }
             return true;
         } else if(id == R.id.action_toggle){
-            dragLayout.toggleMenu();
+            dragLayout.toggleTopView();
             return true;
         } else if(id == R.id.action_over_drag){
             dragLayout.setOverDrag(!dragLayout.isOverDrag());

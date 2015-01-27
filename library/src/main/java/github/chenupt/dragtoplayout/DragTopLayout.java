@@ -127,13 +127,23 @@ public class DragTopLayout extends FrameLayout {
         resetDragContent(anim, 0);
     }
 
-    public void toggleMenu() {
+    public void toggleTopView() {
+        toggleTopView(false);
+    }
+
+    public void toggleTopView(boolean touchMode) {
         switch (panelState) {
             case COLLAPSED:
                 openMenu(true);
+                if (touchMode) {
+                    setTouchMode(true);
+                }
                 break;
             case EXPANDED:
                 closeMenu(true);
+                if (touchMode) {
+                    setTouchMode(false);
+                }
                 break;
         }
     }
