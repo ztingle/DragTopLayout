@@ -240,7 +240,11 @@ public class DragTopLayout extends FrameLayout {
             } else {
                 top = getPaddingTop();
             }
-            dragHelper.settleCapturedViewAt(releasedChild.getLeft(), top);
+            if (wizard.enableSliding) {
+                dragHelper.settleCapturedViewAt(releasedChild.getLeft(), top);
+            } else {
+                // TODO fling
+            }
             postInvalidate();
         }
 
@@ -360,6 +364,7 @@ public class DragTopLayout extends FrameLayout {
         private boolean initOpen;
         private float refreshRadio = 1.5f;
         private boolean overDrag = true;
+        private boolean enableSliding = true;
 
         public SetupWizard(Context context) {
             this.context = context;
@@ -396,6 +401,11 @@ public class DragTopLayout extends FrameLayout {
 
         public SetupWizard setOverDrag(boolean overDrag) {
             this.overDrag = overDrag;
+            return this;
+        }
+
+        public SetupWizard setEnableSliding(boolean enable){
+            this.enableSliding = enable;
             return this;
         }
 
