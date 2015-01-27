@@ -25,7 +25,7 @@ Add the DragTopLayout in your layout.
      android:layout_width="match_parent"
      android:layout_height="match_parent">
 
-     <!--menu view-->
+     <!--top view-->
      <LinearLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
