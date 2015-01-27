@@ -260,7 +260,14 @@ public class DragTopLayout extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return shouldIntercept && dragHelper.shouldInterceptTouchEvent(ev);
+        try {
+            // java.lang.NullPointerException: Attempt to read from null array
+            // at android.support.v4.widget.ViewDragHelper.shouldInterceptTouchEvent(ViewDragHelper.java:1011)
+            return shouldIntercept && dragHelper.shouldInterceptTouchEvent(ev);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
