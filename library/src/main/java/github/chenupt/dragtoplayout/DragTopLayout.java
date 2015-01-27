@@ -200,6 +200,10 @@ public class DragTopLayout extends FrameLayout {
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
+            if (child == topView){
+                dragHelper.captureChildView(dragContentView, pointerId);
+                return false;
+            }
             return child == dragContentView;
         }
 
