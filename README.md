@@ -7,7 +7,7 @@ Sometimes we need to show a top view above a ViewPager or ListView, just like Go
 
 Here is a show case:
 
-![gif](https://raw.githubusercontent.com/chenupt/DragTopLayout/master/imgs/dragtop.gif)
+![gif](https://raw.githubusercontent.com/chenupt/DragTopLayout/master/imgs/dragtop_1.0.2.gif)
 
 Usage
 ---
