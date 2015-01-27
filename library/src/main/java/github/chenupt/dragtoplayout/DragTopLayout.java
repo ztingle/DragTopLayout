@@ -119,11 +119,11 @@ public class DragTopLayout extends FrameLayout {
         });
     }
 
-    public void openMenu(boolean anim) {
+    public void openTopView(boolean anim) {
         resetDragContent(anim, topViewHeight);
     }
 
-    public void closeMenu(boolean anim) {
+    public void closeTopView(boolean anim) {
         resetDragContent(anim, 0);
     }
 
@@ -134,13 +134,13 @@ public class DragTopLayout extends FrameLayout {
     public void toggleTopView(boolean touchMode) {
         switch (panelState) {
             case COLLAPSED:
-                openMenu(true);
+                openTopView(true);
                 if (touchMode) {
                     setTouchMode(true);
                 }
                 break;
             case EXPANDED:
-                closeMenu(true);
+                closeTopView(true);
                 if (touchMode) {
                     setTouchMode(false);
                 }
@@ -219,7 +219,7 @@ public class DragTopLayout extends FrameLayout {
         @Override
         public int clampViewPositionVertical(View child, int top, int dy) {
             if (wizard.overDrag) {
-                // Drag over the menu height.
+                // Drag over the top view height.
                 return Math.max(top, getPaddingTop());
             }else{
                 return Math.min(topViewHeight, Math.max(top, getPaddingTop()));
@@ -371,7 +371,7 @@ public class DragTopLayout extends FrameLayout {
         }
 
         /**
-         * Open the menu after the drag layout is created.
+         * Open the top view after the drag layout is created.
          * The default value is false.
          * @return SetupWizard
          */
