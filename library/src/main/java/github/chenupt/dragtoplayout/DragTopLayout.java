@@ -240,11 +240,11 @@ public class DragTopLayout extends FrameLayout {
                 } else {
                     panelState = PanelState.COLLAPSED;
                 }
-                if (wizard.panelListener != null) {
-                    wizard.panelListener.onPanelStateChanged(panelState);
-                }
             }else{
                 panelState = PanelState.SLIDING;
+            }
+            if (wizard.panelListener != null) {
+                wizard.panelListener.onPanelStateChanged(panelState);
             }
             super.onViewDragStateChanged(state);
         }
