@@ -34,7 +34,7 @@ apply plugin: 'maven'
 ext {
     groupId = 'com.github.chenupt.android'
     artifactId = 'dragtoplayout'
-    version = '1.0.2-SNAPSHOT'
+    version = '1.0.2'
 }
 
 configurations {
@@ -73,7 +73,7 @@ uploadArchives {
     repositories.mavenDeployer {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-        repository(url: sonatypeRepoS) {
+        repository(url: sonatypeRepo) {
             authentication(userName: sonatypeUsername,
                     password: sonatypePassword)
         }
