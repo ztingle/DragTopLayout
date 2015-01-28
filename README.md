@@ -19,7 +19,7 @@ Add the dependency to your build.gradle.
 
 ```
 dependencies {
-    compile 'com.github.chenupt.android:dragtoplayout:1.0.1@aar'
+    compile 'com.github.chenupt.android:dragtoplayout:1.0.2@aar'
 }
 ```
 Add the DragTopLayout in your layout.
