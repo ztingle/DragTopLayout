@@ -68,6 +68,7 @@ public class MainActivity extends ActionBarActivity {
         DragTopLayout.from(this)
                 .open()
                 .setRefreshRadio(1.4f)
+                .setCollapseOffset(100)
                 .listener(new DragTopLayout.SimplePanelListener() {
                     @Override
                     public void onSliding(float radio) {

@@ -85,11 +85,11 @@ public class DragTopLayout extends FrameLayout {
         super.onLayout(changed, left, top, right, bottom);
         dragRange = getHeight();
 
-        // In case of sliding
+        // In case of resetting the content top to target position before sliding.
         int contentTopTemp = contentTop;
         resetTopViewHeight();
 
-        topView.layout(left, Math.min(0, contentTop - topViewHeight), right, contentTop);
+        topView.layout(left, Math.min(topView.getPaddingTop(), contentTop - topViewHeight), right, contentTop);
         dragContentView.layout(
                 left,
                 contentTopTemp,
@@ -224,9 +224,9 @@ public class DragTopLayout extends FrameLayout {
         public int clampViewPositionVertical(View child, int top, int dy) {
             if (wizard.overDrag) {
                 // Drag over the top view height.
-                return Math.max(top, getPaddingTop());
+                return Math.max(top, getPaddingTop() + wizard.collapseOffset);
             }else{
-                return Math.min(topViewHeight, Math.max(top, getPaddingTop()));
+                return Math.min(topViewHeight, Math.max(top, getPaddingTop() + wizard.collapseOffset));
             }
         }
 
@@ -238,7 +238,7 @@ public class DragTopLayout extends FrameLayout {
             if (yvel > 0 || contentTop > topViewHeight) {
                 top = topViewHeight + getPaddingTop();
             } else {
-                top = getPaddingTop();
+                top = getPaddingTop() + wizard.collapseOffset;
             }
             dragHelper.settleCapturedViewAt(releasedChild.getLeft(), top);
             postInvalidate();
@@ -360,6 +360,7 @@ public class DragTopLayout extends FrameLayout {
         private boolean initOpen;
         private float refreshRadio = 1.5f;
         private boolean overDrag = true;
+        private int collapseOffset;
 
         public SetupWizard(Context context) {
             this.context = context;
@@ -394,8 +395,23 @@ public class DragTopLayout extends FrameLayout {
             return this;
         }
 
+        /**
+         * Set enable drag over.
+         * The default value is true.
+         * @return SetupWizard
+         */
         public SetupWizard setOverDrag(boolean overDrag) {
             this.overDrag = overDrag;
+            return this;
+        }
+
+        /**
+         * Set the collapse offset
+         * @param px
+         * @return SetupWizard
+         */
+        public SetupWizard setCollapseOffset(int px){
+            this.collapseOffset = px;
             return this;
         }
 
