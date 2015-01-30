@@ -195,6 +195,14 @@ public class DragTopLayout extends FrameLayout {
         isRefreshing = false;
     }
 
+    public void setCollapseOffset(int px){
+        wizard.collapseOffset = px;
+    }
+
+    public int getCollapseOffset(){
+        return wizard.collapseOffset;
+    }
+
     private void calculateRadio(float top){
         if (wizard.panelListener != null) {
             // Calculate the radio while dragging.

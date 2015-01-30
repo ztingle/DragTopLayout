@@ -34,10 +34,7 @@ public class WebViewFragment extends Fragment {
 
     private void initView(){
         webView = (WebView) getView().findViewById(R.id.web_view);
-
-        webView.getSettings().setJavaScriptEnabled(true);
-//        webView.setWebViewClient(new SampleWebViewClient());
-        webView.loadUrl("http://www.baidu.com");
+        webView.loadUrl("http://search.yahoo.com/");
 
         // webView does not have scroll listener
         webView.setOnTouchListener(new View.OnTouchListener() {

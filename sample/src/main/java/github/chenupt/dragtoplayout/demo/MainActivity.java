@@ -27,6 +27,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.google.common.collect.Lists;
@@ -150,6 +151,15 @@ public class MainActivity extends ActionBarActivity {
             return true;
         } else if(id == R.id.action_over_drag){
             dragLayout.setOverDrag(!dragLayout.isOverDrag());
+            Toast.makeText(this, "overDrag:" + dragLayout.isOverDrag(), Toast.LENGTH_SHORT).show();
+            return true;
+        }  else if(id == R.id.action_offset){
+            if (dragLayout.getCollapseOffset() == 0){
+                dragLayout.setCollapseOffset(200);
+            } else {
+                dragLayout.setCollapseOffset(0);
+            }
+            Toast.makeText(this, "offset:" + dragLayout.getCollapseOffset(), Toast.LENGTH_SHORT).show();
             return true;
         } else if(id == R.id.action_about){
             Intent intent = new Intent(this, AboutActivity.class);
