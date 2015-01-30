@@ -67,7 +67,7 @@ public class ListViewFragment extends Fragment {
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                EventBus.getDefault().post(AttachUtil.isAdpterViewAttach(view));
+                EventBus.getDefault().post(AttachUtil.isAdapterViewAttach(view));
             }
         });
 

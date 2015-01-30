@@ -11,7 +11,7 @@ import android.widget.ScrollView;
  */
 public class AttachUtil {
 
-    public static boolean isAdpterViewAttach(AbsListView listView){
+    public static boolean isAdapterViewAttach(AbsListView listView){
         if (listView != null && listView.getChildCount() > 0) {
             if (listView.getChildAt(0).getTop() < 0) {
                 return false;
