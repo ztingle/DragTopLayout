@@ -20,23 +20,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ListView;
-
-import java.util.ArrayList;
-import java.util.List;
+import android.widget.ScrollView;
 
 import de.greenrobot.event.EventBus;
-import github.chenupt.dragtoplayout.demo.CustomView;
-import github.chenupt.dragtoplayout.demo.utils.DebugLog;
+import github.chenupt.dragtoplayout.AttachUtil;
 import github.chenupt.dragtoplayout.demo.R;
-import github.chenupt.multiplemodel.ItemEntity;
-import github.chenupt.multiplemodel.ItemEntityCreator;
-import github.chenupt.multiplemodel.ModelListAdapter;
-import github.chenupt.multiplemodel.ModelManager;
-import github.chenupt.multiplemodel.ModelManagerBuilder;
 
 /**
  * Created by chenupt@gmail.com on 1/23/15.
@@ -44,12 +35,11 @@ import github.chenupt.multiplemodel.ModelManagerBuilder;
  */
 public class ScrollViewFragment extends Fragment {
 
-    private ListView listView;
-    private ModelListAdapter adapter;
+    private ScrollView scrollView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list, container, false);
+        return inflater.inflate(R.layout.fragment_scrollview, container, false);
     }
 
     @Override
@@ -59,51 +49,18 @@ public class ScrollViewFragment extends Fragment {
     }
 
     private void initView(){
-        listView = (ListView) getView().findViewById(R.id.list_view);
+        scrollView = (ScrollView) getView().findViewById(R.id.scroll_view);
 
-        adapter = new ModelListAdapter(getActivity(), getModelManager());
-        listView.setAdapter(adapter);
-
-        adapter.setList(getList());
-        adapter.notifyDataSetChanged();
-
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        // Scroll view does not have scroll listener
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-                DebugLog.d("scrollState:" + scrollState);
-                if (listView.getChildCount() > 0) {
-                    if (listView.getChildAt(0).getTop() >= 0) {
-                        EventBus.getDefault().post(true);
-                    } else {
-                        EventBus.getDefault().post(false);
-                    }
-                }
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (listView.getChildCount() > 0) {
-                    if (listView.getChildAt(0).getTop() >= 0) {
-                        EventBus.getDefault().post(true);
-
-                    } else {
-                        EventBus.getDefault().post(false);
-                    }
-                }
+            public boolean onTouch(View v, MotionEvent event) {
+                EventBus.getDefault().post(AttachUtil.isScrollViewAttach(scrollView));
+                return false;
             }
         });
 
     }
 
-    public ModelManager getModelManager() {
-        return ModelManagerBuilder.begin().addModel(CustomView.class).build(ModelManager.class);
-    }
 
-    public List<ItemEntity> getList() {
-        List<ItemEntity> resultList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            ItemEntityCreator.create("").setModelView(CustomView.class).attach(resultList);
-        }
-        return resultList;
-    }
 }

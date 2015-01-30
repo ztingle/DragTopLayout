@@ -55,7 +55,7 @@ public class RecyclerFragment extends Fragment{
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                EventBus.getDefault().post(AttachUtil.isRecyclerView(recyclerView));
+                EventBus.getDefault().post(AttachUtil.isRecyclerViewAttach(recyclerView));
             }
         });
 
