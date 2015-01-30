@@ -9,7 +9,7 @@ import android.widget.AbsListView;
  */
 public class AttachUtil {
 
-    public static boolean isListViewAttach(AbsListView listView){
+    public static boolean isAdpterViewAttach(AbsListView listView){
         if (listView != null && listView.getChildCount() > 0) {
             if (listView.getChildAt(0).getTop() < 0) {
                 return false;

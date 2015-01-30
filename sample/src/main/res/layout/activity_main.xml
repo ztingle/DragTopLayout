@@ -65,7 +65,7 @@
                 android:layout_height="match_parent">
                 <com.astuetz.PagerSlidingTabStrip
                     android:id="@+id/tabs"
-                    app:pstsShouldExpand="true"
+                    app:pstsShouldExpand="false"
                     app:pstsIndicatorColor="@color/white"
                     android:textColor="@color/white"
                     android:layout_width="match_parent"

@@ -22,7 +22,7 @@ public class DataService {
 
     public List<ItemEntity> getList() {
         List<ItemEntity> resultList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 60; i++) {
             ItemEntityCreator.create("").setModelView(CustomView.class).attach(resultList);
         }
         return resultList;

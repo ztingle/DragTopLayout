@@ -36,6 +36,7 @@ import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import github.chenupt.dragtoplayout.DragTopLayout;
+import github.chenupt.dragtoplayout.demo.fragments.GridViewFragment;
 import github.chenupt.dragtoplayout.demo.fragments.ListViewFragment;
 import github.chenupt.dragtoplayout.demo.fragments.RecyclerFragment;
 import github.chenupt.multiplemodel.viewpager.ModelPagerAdapter;
@@ -87,17 +88,22 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private List<String> getTitles(){
-        return Lists.newArrayList("ListView", "RecyclerView");
+        return Lists.newArrayList("ListView", "RecyclerView", "GridView");
     }
 
     private List<Fragment> getFragments(){
         List<Fragment> list = new ArrayList<>();
         Fragment listFragment = new ListViewFragment();
         Fragment recyclerFragment = new RecyclerFragment();
+        Fragment gridView = new GridViewFragment();
         list.add(listFragment);
         list.add(recyclerFragment);
+        list.add(gridView);
         return list;
     }
+
+
+
 
     // Handle scroll event from fragments
     public void onEvent(Boolean b){
