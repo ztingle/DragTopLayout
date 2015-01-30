@@ -9,16 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.greenrobot.event.EventBus;
-import github.chenupt.dragtoplayout.demo.CustomView;
+import github.chenupt.dragtoplayout.demo.DataService;
 import github.chenupt.dragtoplayout.demo.R;
-import github.chenupt.multiplemodel.ItemEntity;
-import github.chenupt.multiplemodel.ItemEntityCreator;
-import github.chenupt.multiplemodel.ModelManager;
-import github.chenupt.multiplemodel.ModelManagerBuilder;
+import github.chenupt.dragtoplayout.demo.utils.AttachUtil;
 import github.chenupt.multiplemodel.recycler.ModelRecyclerAdapter;
 
 /**
@@ -38,16 +32,21 @@ public class RecyclerFragment extends Fragment{
         initViews();
     }
 
-    private void initViews(){
+    private void initViews() {
         RecyclerView recyclerView = (RecyclerView) getView().findViewById(R.id.recycler_view);
-
         // init recycler view
-        ModelRecyclerAdapter adapter = new ModelRecyclerAdapter(getActivity(), getModelManager());
+        ModelRecyclerAdapter adapter = new ModelRecyclerAdapter(getActivity(), DataService.getInstance().getModelManager());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
+        // set data source
+        adapter.setList(DataService.getInstance().getList());
+        adapter.notifyDataSetChanged();
 
+
+
+        // attach top listener
         recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -56,35 +55,13 @@ public class RecyclerFragment extends Fragment{
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                if (recyclerView.getChildCount() > 0) {
-                    if (recyclerView.getChildAt(0).getTop() >= 0) {
-                        EventBus.getDefault().post(true);
-                    } else {
-                        EventBus.getDefault().post(false);
-                    }
-                }else{
-                    EventBus.getDefault().post(true);
-                }
+                EventBus.getDefault().post(AttachUtil.isRecyclerView(recyclerView));
             }
         });
 
-        // set data source
-        adapter.setList(getList());
-        adapter.notifyDataSetChanged();
+
     }
 
-
-    public ModelManager getModelManager() {
-        return ModelManagerBuilder.begin().addModel(CustomView.class).build(ModelManager.class);
-    }
-
-    public List<ItemEntity> getList() {
-        List<ItemEntity> resultList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            ItemEntityCreator.create("").setModelView(CustomView.class).attach(resultList);
-        }
-        return resultList;
-    }
 
 }
 

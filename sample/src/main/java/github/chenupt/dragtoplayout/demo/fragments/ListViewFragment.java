@@ -25,17 +25,11 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.greenrobot.event.EventBus;
-import github.chenupt.dragtoplayout.demo.CustomView;
+import github.chenupt.dragtoplayout.demo.DataService;
 import github.chenupt.dragtoplayout.demo.R;
-import github.chenupt.multiplemodel.ItemEntity;
-import github.chenupt.multiplemodel.ItemEntityCreator;
+import github.chenupt.dragtoplayout.demo.utils.AttachUtil;
 import github.chenupt.multiplemodel.ModelListAdapter;
-import github.chenupt.multiplemodel.ModelManager;
-import github.chenupt.multiplemodel.ModelManagerBuilder;
 
 /**
  * Created by chenupt@gmail.com on 1/23/15.
@@ -59,44 +53,25 @@ public class ListViewFragment extends Fragment {
 
     private void initView(){
         listView = (ListView) getView().findViewById(R.id.list_view);
-
-        adapter = new ModelListAdapter(getActivity(), getModelManager());
+        adapter = new ModelListAdapter(getActivity(), DataService.getInstance().getModelManager());
         listView.setAdapter(adapter);
-
-        adapter.setList(getList());
+        adapter.setList(DataService.getInstance().getList());
         adapter.notifyDataSetChanged();
 
+
+        // attach top
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (listView.getChildCount() > 0) {
-                    if (listView.getChildAt(0).getTop() >= 0) {
-                        EventBus.getDefault().post(true);
-                    } else {
-                        EventBus.getDefault().post(false);
-                    }
-                }else{
-                    EventBus.getDefault().post(true);
-                }
+                EventBus.getDefault().post(AttachUtil.isListViewAttach(view));
             }
         });
 
     }
 
-    public ModelManager getModelManager() {
-        return ModelManagerBuilder.begin().addModel(CustomView.class).build(ModelManager.class);
-    }
 
-    public List<ItemEntity> getList() {
-        List<ItemEntity> resultList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            ItemEntityCreator.create("").setModelView(CustomView.class).attach(resultList);
-        }
-        return resultList;
-    }
 }
