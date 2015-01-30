@@ -73,7 +73,7 @@ public class DragTopLayout extends FrameLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
         if (getChildCount() < 2) {
-            throw new RuntimeException("Content view must contains two child view at least.");
+            throw new RuntimeException("Content view must contains two child views at least.");
         }
         topView = getChildAt(0);
         dragContentView = getChildAt(1);
@@ -200,6 +200,10 @@ public class DragTopLayout extends FrameLayout {
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
+            if(child == topView){
+                dragHelper.captureChildView(dragContentView, pointerId);
+                return false;
+            }
             return child == dragContentView;
         }
 
