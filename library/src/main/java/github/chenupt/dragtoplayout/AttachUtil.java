@@ -1,6 +1,7 @@
 package github.chenupt.dragtoplayout;
 
 import android.support.v7.widget.RecyclerView;
+import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.ScrollView;
 
@@ -31,6 +32,15 @@ public class AttachUtil {
     public static boolean isScrollViewAttach(ScrollView scrollView){
         if (scrollView != null) {
             if (scrollView.getScrollY() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isWebViewAttach(WebView webView){
+        if (webView != null) {
+            if (webView.getScrollY() > 0) {
                 return false;
             }
         }

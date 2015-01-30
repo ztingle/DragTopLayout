@@ -40,6 +40,7 @@ import github.chenupt.dragtoplayout.demo.fragments.GridViewFragment;
 import github.chenupt.dragtoplayout.demo.fragments.ListViewFragment;
 import github.chenupt.dragtoplayout.demo.fragments.RecyclerFragment;
 import github.chenupt.dragtoplayout.demo.fragments.ScrollViewFragment;
+import github.chenupt.dragtoplayout.demo.fragments.WebViewFragment;
 import github.chenupt.multiplemodel.viewpager.ModelPagerAdapter;
 import github.chenupt.multiplemodel.viewpager.PagerModelManager;
 
@@ -89,7 +90,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private List<String> getTitles(){
-        return Lists.newArrayList("ListView", "RecyclerView", "GridView", "ScrollView");
+        return Lists.newArrayList("ListView", "RecyclerView", "GridView", "ScrollView", "WebView");
     }
 
     private List<Fragment> getFragments(){
@@ -98,10 +99,12 @@ public class MainActivity extends ActionBarActivity {
         Fragment recyclerFragment = new RecyclerFragment();
         Fragment gridViewFragment = new GridViewFragment();
         Fragment scrollViewFragment = new ScrollViewFragment();
+        Fragment webViewFragment = new WebViewFragment();
         list.add(listFragment);
         list.add(recyclerFragment);
         list.add(gridViewFragment);
         list.add(scrollViewFragment);
+        list.add(webViewFragment);
         return list;
     }
 
