@@ -1,11 +1,11 @@
-package github.chenupt.dragtoplayout.demo.utils;
+package github.chenupt.dragtoplayout;
 
 import android.support.v7.widget.RecyclerView;
 import android.widget.AbsListView;
 
 /**
  * Created by chenupt@gmail.com on 1/30/15.
- * Description :
+ * Description : Attach top helper
  */
 public class AttachUtil {
 

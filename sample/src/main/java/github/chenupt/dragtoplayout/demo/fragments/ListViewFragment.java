@@ -28,7 +28,7 @@ import android.widget.ListView;
 import de.greenrobot.event.EventBus;
 import github.chenupt.dragtoplayout.demo.DataService;
 import github.chenupt.dragtoplayout.demo.R;
-import github.chenupt.dragtoplayout.demo.utils.AttachUtil;
+import github.chenupt.dragtoplayout.AttachUtil;
 import github.chenupt.multiplemodel.ModelListAdapter;
 
 /**
