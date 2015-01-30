@@ -18,6 +18,7 @@
 package github.chenupt.dragtoplayout;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Handler;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
@@ -27,13 +28,14 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 
+
 /**
  * Created by chenupt@gmail.com on 2015/1/18.
  * Description : Drag down to show a menu panel on the top.
  */
 public class DragTopLayout extends FrameLayout {
 
-    private SetupWizard wizard;
+    private static SetupWizard wizard;
     private ViewDragHelper dragHelper;
     private int dragRange;
     private View dragContentView;
@@ -62,11 +64,19 @@ public class DragTopLayout extends FrameLayout {
 
     public DragTopLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        init(attrs);
     }
 
-    private void init() {
+    private void init(AttributeSet attrs) {
+        wizard = new SetupWizard();
         dragHelper = ViewDragHelper.create(this, 1.0f, callback);
+
+        // init from attrs
+        TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.DragTopLayout);
+        wizard.setCollapseOffset(a.getDimensionPixelSize(R.styleable.DragTopLayout_dtlCollapseOffset, wizard.collapseOffset));
+        wizard.setOverDrag(a.getBoolean(R.styleable.DragTopLayout_dtlOverDrag, wizard.overDrag));
+        wizard.initOpen = a.getBoolean(R.styleable.DragTopLayout_dtlOpen, wizard.initOpen);
+        a.recycle();
     }
 
     @Override
@@ -295,9 +305,9 @@ public class DragTopLayout extends FrameLayout {
         this.shouldIntercept = shouldIntercept;
     }
 
-    private void setupWizard(SetupWizard setupWizard) {
-        this.wizard = setupWizard;
+    private void setupWizard() {
 
+        // init panel state
         if (wizard.panelListener != null){
             if (wizard.initOpen) {
                 panelState = PanelState.EXPANDED;
@@ -307,6 +317,7 @@ public class DragTopLayout extends FrameLayout {
                 wizard.panelListener.onSliding(0f);
             }
         }
+
     }
 
     public interface PanelListener {
@@ -351,7 +362,7 @@ public class DragTopLayout extends FrameLayout {
     // -----------------
 
     public static SetupWizard from(Context context) {
-        return new SetupWizard(context);
+        return wizard;
     }
 
     public static final class SetupWizard {
@@ -362,8 +373,8 @@ public class DragTopLayout extends FrameLayout {
         private boolean overDrag = true;
         private int collapseOffset;
 
-        public SetupWizard(Context context) {
-            this.context = context;
+        public SetupWizard() {
+
         }
 
         /**
@@ -416,7 +427,7 @@ public class DragTopLayout extends FrameLayout {
         }
 
         public void setup(DragTopLayout dragTopLayout) {
-            dragTopLayout.setupWizard(this);
+            dragTopLayout.setupWizard();
         }
     }
 
