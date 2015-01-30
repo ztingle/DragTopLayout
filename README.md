@@ -52,11 +52,22 @@ Init the DragTopLayout in your activity code.
 ```java
 DragTopLayout.from(this)
         .open()
-        .setRefreshRadio(1.4f)
         .listener(new DragTopLayout.SimplePanelListener() {
         ...
         }).setup(dragLayout);
 ```
+[XML Attributes](https://github.com/chenupt/DragTopLayout/blob/dev/library/src/main/res/values/attrs.xml)
+
+Changelog
+---
+###v1.1.0
+ * Support [collapse offset](https://github.com/chenupt/DragTopLayout/issues/2).
+ * Support drag down while attaching top view.
+ * Support attributes in xml.
+ * Add attach util.
+ * New sample shows how to control content view attach with ListView & [RecyclerView](https://github.com/chenupt/DragTopLayout/issues/3) & GridView & ScrollView & WebView.
+ 
+
 Developed By
 ---
  * Chenupt - <chenupt@outlook.com> 
