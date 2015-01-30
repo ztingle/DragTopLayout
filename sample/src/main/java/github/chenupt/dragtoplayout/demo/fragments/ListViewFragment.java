@@ -14,7 +14,7 @@
  * imitations under the License.
  */
 
-package github.chenupt.dragtoplayout.demo;
+package github.chenupt.dragtoplayout.demo.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
+import github.chenupt.dragtoplayout.demo.CustomView;
+import github.chenupt.dragtoplayout.demo.R;
 import github.chenupt.multiplemodel.ItemEntity;
 import github.chenupt.multiplemodel.ItemEntityCreator;
 import github.chenupt.multiplemodel.ModelListAdapter;
@@ -39,7 +41,7 @@ import github.chenupt.multiplemodel.ModelManagerBuilder;
  * Created by chenupt@gmail.com on 1/23/15.
  * Description :
  */
-public class TestListFragment extends Fragment {
+public class ListViewFragment extends Fragment {
 
     private ListView listView;
     private ModelListAdapter adapter;
@@ -67,14 +69,7 @@ public class TestListFragment extends Fragment {
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                DebugLog.d("scrollState:" + scrollState);
-                if (listView.getChildCount() > 0) {
-                    if (listView.getChildAt(0).getTop() >= 0) {
-                        EventBus.getDefault().post(true);
-                    } else {
-                        EventBus.getDefault().post(false);
-                    }
-                }
+
             }
 
             @Override
@@ -82,10 +77,11 @@ public class TestListFragment extends Fragment {
                 if (listView.getChildCount() > 0) {
                     if (listView.getChildAt(0).getTop() >= 0) {
                         EventBus.getDefault().post(true);
-
                     } else {
                         EventBus.getDefault().post(false);
                     }
+                }else{
+                    EventBus.getDefault().post(true);
                 }
             }
         });

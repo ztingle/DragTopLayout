@@ -9,9 +9,11 @@
  For more information, please refer to <http://unlicense.org/>
  */
 
-package github.chenupt.dragtoplayout.demo;
+package github.chenupt.dragtoplayout.demo.utils;
 
 import android.util.Log;
+
+import github.chenupt.dragtoplayout.demo.BuildConfig;
 
 
 /**

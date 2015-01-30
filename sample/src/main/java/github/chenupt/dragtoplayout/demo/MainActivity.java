@@ -18,6 +18,7 @@ package github.chenupt.dragtoplayout.demo;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,10 +31,13 @@ import android.widget.ImageView;
 import com.astuetz.PagerSlidingTabStrip;
 import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import github.chenupt.dragtoplayout.DragTopLayout;
+import github.chenupt.dragtoplayout.demo.fragments.ListViewFragment;
+import github.chenupt.dragtoplayout.demo.fragments.RecyclerFragment;
 import github.chenupt.multiplemodel.viewpager.ModelPagerAdapter;
 import github.chenupt.multiplemodel.viewpager.PagerModelManager;
 
@@ -76,14 +80,23 @@ public class MainActivity extends ActionBarActivity {
 
         // init pager
         PagerModelManager factory = new PagerModelManager();
-        factory.addCommonFragment(TestListFragment.class, getTitles(), getTitles());
+        factory.addCommonFragment(getFragments(), getTitles());
         adapter = new ModelPagerAdapter(getSupportFragmentManager(), factory);
         viewPager.setAdapter(adapter);
         pagerSlidingTabStrip.setViewPager(viewPager);
     }
 
     private List<String> getTitles(){
-        return Lists.newArrayList("TAB 1", "TAB 2", "TAB 3", "TAB 4");
+        return Lists.newArrayList("ListView", "RecyclerView");
+    }
+
+    private List<Fragment> getFragments(){
+        List<Fragment> list = new ArrayList<>();
+        Fragment listFragment = new ListViewFragment();
+        Fragment recyclerFragment = new RecyclerFragment();
+        list.add(listFragment);
+        list.add(recyclerFragment);
+        return list;
     }
 
     // Handle scroll event from fragments
