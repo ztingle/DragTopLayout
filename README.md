@@ -11,7 +11,7 @@ The sample app: [click me](https://github.com/chenupt/DragTopLayout/raw/master/i
 
 Here is a show case: 
 
-![gif](https://raw.githubusercontent.com/chenupt/DragTopLayout/master/imgs/dragtop_1.0.2.gif)
+![gif](https://raw.githubusercontent.com/chenupt/DragTopLayout/master/imgs/dragtop_1.1.0.gif)
 
 Usage
 ---
