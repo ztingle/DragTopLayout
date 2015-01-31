@@ -35,7 +35,7 @@ apply plugin: 'maven'
 ext {
     groupId = 'com.github.chenupt.android'
     artifactId = 'dragtoplayout'
-    version = '1.0.2'
+    version = '1.1.0'
 }
 
 configurations {
