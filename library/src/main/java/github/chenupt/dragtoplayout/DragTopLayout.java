@@ -28,7 +28,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 
-
 /**
  * Created by chenupt@gmail.com on 2015/1/18.
  * Description : Drag down to show a menu panel on the top.
@@ -168,23 +167,24 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
-    public void setOverDrag(boolean overDrag){
+    public void setOverDrag(boolean overDrag) {
         wizard.overDrag = overDrag;
     }
 
-    public boolean isOverDrag(){
+    public boolean isOverDrag() {
         return wizard.overDrag;
     }
 
     /**
      * Get refresh state
+     *
      * @return
      */
     public boolean isRefreshing() {
         return isRefreshing;
     }
 
-    public void setRefreshing(boolean isRefreshing){
+    public void setRefreshing(boolean isRefreshing) {
         this.isRefreshing = isRefreshing;
     }
 
@@ -195,15 +195,15 @@ public class DragTopLayout extends FrameLayout {
         isRefreshing = false;
     }
 
-    public void setCollapseOffset(int px){
+    public void setCollapseOffset(int px) {
         wizard.collapseOffset = px;
     }
 
-    public int getCollapseOffset(){
+    public int getCollapseOffset() {
         return wizard.collapseOffset;
     }
 
-    private void calculateRadio(float top){
+    private void calculateRadio(float top) {
         if (wizard.panelListener != null) {
             // Calculate the radio while dragging.
             float radio = top / topViewHeight;
@@ -218,7 +218,7 @@ public class DragTopLayout extends FrameLayout {
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
-            if(child == topView){
+            if (child == topView) {
                 dragHelper.captureChildView(dragContentView, pointerId);
                 return false;
             }
@@ -243,7 +243,7 @@ public class DragTopLayout extends FrameLayout {
             if (wizard.overDrag) {
                 // Drag over the top view height.
                 return Math.max(top, getPaddingTop() + wizard.collapseOffset);
-            }else{
+            } else {
                 return Math.min(topViewHeight, Math.max(top, getPaddingTop() + wizard.collapseOffset));
             }
         }
@@ -272,7 +272,7 @@ public class DragTopLayout extends FrameLayout {
                 } else {
                     panelState = PanelState.COLLAPSED;
                 }
-            }else{
+            } else {
                 panelState = PanelState.SLIDING;
             }
             if (wizard.panelListener != null) {
@@ -296,7 +296,7 @@ public class DragTopLayout extends FrameLayout {
             // java.lang.NullPointerException: Attempt to read from null array
             // at android.support.v4.widget.ViewDragHelper.shouldInterceptTouchEvent(ViewDragHelper.java:1011)
             return shouldIntercept && dragHelper.shouldInterceptTouchEvent(ev);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             e.printStackTrace();
         }
         return false;
@@ -316,21 +316,23 @@ public class DragTopLayout extends FrameLayout {
     private void setupWizard() {
 
         // init panel state
-        if (wizard.panelListener != null){
-            if (wizard.initOpen) {
-                panelState = PanelState.EXPANDED;
+        if (wizard.initOpen) {
+            panelState = PanelState.EXPANDED;
+            if (wizard.panelListener != null) {
                 wizard.panelListener.onSliding(1.0f);
-            }else{
-                panelState = PanelState.COLLAPSED;
+            }
+        } else {
+            panelState = PanelState.COLLAPSED;
+            if (wizard.panelListener != null) {
                 wizard.panelListener.onSliding(0f);
             }
         }
-
     }
 
     public interface PanelListener {
         /**
          * Called while the panel state is changed.
+         *
          * @param panelState
          */
         public void onPanelStateChanged(PanelState panelState);
@@ -338,6 +340,7 @@ public class DragTopLayout extends FrameLayout {
         /**
          * Called while dragging.
          * radio >= 0.
+         *
          * @param radio
          */
         public void onSliding(float radio);
@@ -387,6 +390,7 @@ public class DragTopLayout extends FrameLayout {
 
         /**
          * Setup the drag listener.
+         *
          * @return SetupWizard
          */
         public SetupWizard listener(PanelListener panelListener) {
@@ -397,6 +401,7 @@ public class DragTopLayout extends FrameLayout {
         /**
          * Open the top view after the drag layout is created.
          * The default value is false.
+         *
          * @return SetupWizard
          */
         public SetupWizard open() {
@@ -407,6 +412,7 @@ public class DragTopLayout extends FrameLayout {
         /**
          * Set the refresh position while dragging you want.
          * The default value is 1.5f.
+         *
          * @return SetupWizard
          */
         public SetupWizard setRefreshRadio(float radio) {
@@ -417,6 +423,7 @@ public class DragTopLayout extends FrameLayout {
         /**
          * Set enable drag over.
          * The default value is true.
+         *
          * @return SetupWizard
          */
         public SetupWizard setOverDrag(boolean overDrag) {
@@ -426,10 +433,11 @@ public class DragTopLayout extends FrameLayout {
 
         /**
          * Set the collapse offset
+         *
          * @param px
          * @return SetupWizard
          */
-        public SetupWizard setCollapseOffset(int px){
+        public SetupWizard setCollapseOffset(int px) {
             this.collapseOffset = px;
             return this;
         }

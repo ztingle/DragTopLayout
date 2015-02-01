@@ -80,7 +80,8 @@ public class MainActivity extends ActionBarActivity {
                     public void onSliding(float radio) {
                         Log.d(TAG, "sliding: " + radio);
                     }
-                }).setup(dragLayout);
+                })
+                .setup(dragLayout);
 
         // init pager
         PagerModelManager factory = new PagerModelManager();
