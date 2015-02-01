@@ -40,16 +40,16 @@ public class DragTopLayout extends FrameLayout {
   private View dragContentView;
   private View topView;
 
-
   private int contentTop;
   private int topViewHeight;
   private boolean isRefreshing;
 
   // Used for scrolling
   private float lastSlidingRatio = 0;
-  private boolean dispatchingDownFaked = false;
-  private boolean dispatchingDragContentView = false;
-  private float dispatchingChildrenStartedAtY = Integer.MAX_VALUE;
+  private boolean dispatchingChildrenDownFaked = false;
+  private boolean dispatchingChildrenContentView = false;
+  private float dispatchingChildrenStartedAtY = Float.MAX_VALUE;
+  private float dispatchingChildrenAtRatio = 0f;
 
   public static enum PanelState {
     EXPANDED,
@@ -120,7 +120,13 @@ public class DragTopLayout extends FrameLayout {
         handleSlide(newTopHeight);
       }
       topViewHeight = newTopHeight;
+
+      setDispatchingChildrenAtRatio();
     }
+  }
+
+  private void setDispatchingChildrenAtRatio() {
+    dispatchingChildrenAtRatio = ((float) wizard.collapseOffset) / ((float) topViewHeight);
   }
 
   private void handleSlide(final int top) {
@@ -200,6 +206,7 @@ public class DragTopLayout extends FrameLayout {
 
   public void setCollapseOffset(int px) {
     wizard.collapseOffset = px;
+    setDispatchingChildrenAtRatio();
   }
 
   public int getCollapseOffset() {
@@ -207,14 +214,16 @@ public class DragTopLayout extends FrameLayout {
   }
 
   private void calculateRadio(float top) {
+
+    float radio = top / topViewHeight;
+    lastSlidingRatio = radio;
+    if (dispatchingChildrenContentView && radio > dispatchingChildrenAtRatio) {
+      resetDispatchingContentView();
+    }
+
     if (wizard.panelListener != null) {
       // Calculate the radio while dragging.
-      float radio = top / topViewHeight;
-      lastSlidingRatio = radio;
       wizard.panelListener.onSliding(radio);
-      if (radio > 0 && dispatchingDragContentView) {
-        resetDispatchingContentView();
-      }
       if (radio > wizard.refreshRadio && !isRefreshing) {
         wizard.panelListener.onRefresh();
         isRefreshing = true;
@@ -301,13 +310,13 @@ public class DragTopLayout extends FrameLayout {
     try {
 
       boolean intercept = shouldIntercept && dragHelper.shouldInterceptTouchEvent(ev);
-      // Log.d("Drag", "intercept " + intercept + " " + dispatchingDownFaked);
+      // Log.d("Drag", "intercept " + intercept + " " + dispatchingChildrenDownFaked);
       // java.lang.NullPointerException: Attempt to read from null array
       // at android.support.v4.widget.ViewDragHelper.shouldInterceptTouchEvent(ViewDragHelper.java:1011)
 
 
           /*
-          if (lastSlidingRatio == 0 && dispatchingDownFaked){
+          if (lastSlidingRatio == 0 && dispatchingChildrenDownFaked){
             return false;
           }
           */
@@ -322,43 +331,40 @@ public class DragTopLayout extends FrameLayout {
   @Override
   public boolean onTouchEvent(MotionEvent event) {
 
-
     final int action = MotionEventCompat.getActionMasked(event);
 
     if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
       resetDispatchingContentView();
     }
 
-
-    if (!dispatchingDragContentView) {
+    if (!dispatchingChildrenContentView) {
       dragHelper.processTouchEvent(event);
     }
 
-
-    if (action == MotionEvent.ACTION_MOVE && lastSlidingRatio == 0) {
-      dispatchingDragContentView = true;
-      if (!dispatchingDownFaked) {
+    if (action == MotionEvent.ACTION_MOVE && lastSlidingRatio == dispatchingChildrenAtRatio) {
+      dispatchingChildrenContentView = true;
+      if (!dispatchingChildrenDownFaked) {
         dispatchingChildrenStartedAtY = event.getY();
         event.setAction(MotionEvent.ACTION_DOWN);
-        dispatchingDownFaked = true;
+        dispatchingChildrenDownFaked = true;
       }
 
       dragContentView.dispatchTouchEvent(event);
-      Log.d("Drag", "started "+ dispatchingChildrenStartedAtY  +  " "+event.getY());
+      Log.d("Drag", "started " + dispatchingChildrenStartedAtY + " " + event.getY());
     }
 
-    if (dispatchingDragContentView && dispatchingChildrenStartedAtY < event.getY() ){
-      Log.d("Drag", "reset "+ event.getY());
+    if (dispatchingChildrenContentView && dispatchingChildrenStartedAtY < event.getY()) {
+      Log.d("Drag", "reset " + event.getY());
       resetDispatchingContentView();
     }
 
     return true;
   }
 
-  private void resetDispatchingContentView(){
-    dispatchingDownFaked = false;
-    dispatchingDragContentView = false;
-    dispatchingChildrenStartedAtY = Integer.MAX_VALUE;
+  private void resetDispatchingContentView() {
+    dispatchingChildrenDownFaked = false;
+    dispatchingChildrenContentView = false;
+    dispatchingChildrenStartedAtY = Float.MAX_VALUE;
   }
 
   public void setTouchMode(boolean shouldIntercept) {
