@@ -23,12 +23,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
-
+import android.widget.Toast;
 import de.greenrobot.event.EventBus;
+import github.chenupt.dragtoplayout.AttachUtil;
 import github.chenupt.dragtoplayout.demo.DataService;
 import github.chenupt.dragtoplayout.demo.R;
-import github.chenupt.dragtoplayout.AttachUtil;
 import github.chenupt.multiplemodel.ModelListAdapter;
 
 /**
@@ -37,41 +38,45 @@ import github.chenupt.multiplemodel.ModelListAdapter;
  */
 public class ListViewFragment extends Fragment {
 
-    private ListView listView;
-    private ModelListAdapter adapter;
+  private ListView listView;
+  private ModelListAdapter adapter;
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list, container, false);
-    }
+  @Override
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
+    return inflater.inflate(R.layout.fragment_list, container, false);
+  }
 
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        initView();
-    }
+  @Override
+  public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    initView();
+  }
 
-    private void initView(){
-        listView = (ListView) getView().findViewById(R.id.list_view);
-        adapter = new ModelListAdapter(getActivity(), DataService.getInstance().getModelManager());
-        listView.setAdapter(adapter);
-        adapter.setList(DataService.getInstance().getList());
-        adapter.notifyDataSetChanged();
+  private void initView() {
+    listView = (ListView) getView().findViewById(R.id.list_view);
+    adapter = new ModelListAdapter(getActivity(), DataService.getInstance().getModelManager());
+    listView.setAdapter(adapter);
+    adapter.setList(DataService.getInstance().getList());
+    adapter.notifyDataSetChanged();
 
+    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Toast.makeText(getActivity(), "Clicked " + position, Toast.LENGTH_SHORT).show();
+      }
+    });
 
-        // attach top
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
+    // attach top
+    listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+      @Override
+      public void onScrollStateChanged(AbsListView view, int scrollState) {
+      }
 
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                EventBus.getDefault().post(AttachUtil.isAdapterViewAttach(view));
-            }
-        });
-
-    }
-
-
+      @Override
+      public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+          int totalItemCount) {
+        EventBus.getDefault().post(AttachUtil.isAdapterViewAttach(view));
+      }
+    });
+  }
 }

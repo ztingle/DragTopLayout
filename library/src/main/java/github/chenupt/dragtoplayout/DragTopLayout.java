@@ -332,10 +332,6 @@ public class DragTopLayout extends FrameLayout {
 
     final int action = MotionEventCompat.getActionMasked(event);
 
-    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-      resetDispatchingContentView();
-    }
-
     if (!dispatchingChildrenContentView) {
       dragHelper.processTouchEvent(event);
     }
@@ -352,6 +348,10 @@ public class DragTopLayout extends FrameLayout {
     }
 
     if (dispatchingChildrenContentView && dispatchingChildrenStartedAtY < event.getY()) {
+      resetDispatchingContentView();
+    }
+
+    if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
       resetDispatchingContentView();
     }
 
