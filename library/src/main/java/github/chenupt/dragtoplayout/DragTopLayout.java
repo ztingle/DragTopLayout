@@ -44,6 +44,7 @@ public class DragTopLayout extends FrameLayout {
     private int contentTop;
     private int topViewHeight;
     private boolean isRefreshing;
+    private boolean shouldUpdateContentHeight;
 
     public static enum PanelState {
         EXPANDED,
@@ -97,6 +98,7 @@ public class DragTopLayout extends FrameLayout {
         // In case of resetting the content top to target position before sliding.
         int contentTopTemp = contentTop;
         resetTopViewHeight();
+        resetContentHeight();
 
         topView.layout(left, Math.min(topView.getPaddingTop(), contentTop - topViewHeight), right, contentTop);
         dragContentView.layout(
@@ -197,9 +199,8 @@ public class DragTopLayout extends FrameLayout {
 
     public void setCollapseOffset(int px) {
         wizard.collapseOffset = px;
-        ViewGroup.LayoutParams layoutParams = dragContentView.getLayoutParams();
-        layoutParams.height = getHeight() - px;
-        dragContentView.setLayoutParams(layoutParams);
+        shouldUpdateContentHeight = true;
+        resetContentHeight();
     }
 
     public int getCollapseOffset() {
@@ -215,6 +216,15 @@ public class DragTopLayout extends FrameLayout {
                 wizard.panelListener.onRefresh();
                 isRefreshing = true;
             }
+        }
+    }
+
+    private void resetContentHeight(){
+        if (shouldUpdateContentHeight) {
+            ViewGroup.LayoutParams layoutParams = dragContentView.getLayoutParams();
+            layoutParams.height = getHeight() - wizard.collapseOffset;
+            dragContentView.setLayoutParams(layoutParams);
+            shouldUpdateContentHeight = false;
         }
     }
 
@@ -317,6 +327,10 @@ public class DragTopLayout extends FrameLayout {
     }
 
     private void setupWizard() {
+        // fix the content height with collapse offset
+        if(wizard.collapseOffset != 0){
+            shouldUpdateContentHeight = true;
+        }
 
         // init panel state
         if (wizard.initOpen) {
