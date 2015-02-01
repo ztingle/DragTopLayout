@@ -68,7 +68,7 @@ artifacts {
     archives androidSourcesJar
     archives androidJavadocsJar
 }
-
+/*
 uploadArchives {
     configuration = configurations.archives
     repositories.mavenDeployer {
@@ -113,3 +113,4 @@ uploadArchives {
         }
     }
 }
+*/

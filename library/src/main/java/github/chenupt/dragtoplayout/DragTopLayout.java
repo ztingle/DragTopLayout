@@ -20,9 +20,11 @@ package github.chenupt.dragtoplayout;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Handler;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -44,6 +46,8 @@ public class DragTopLayout extends FrameLayout {
     private int contentTop;
     private int topViewHeight;
     private boolean isRefreshing;
+    private float lastSlidingRatio = 0;
+  private boolean downFaked = false;
 
     public static enum PanelState {
         EXPANDED,
@@ -207,6 +211,7 @@ public class DragTopLayout extends FrameLayout {
         if (wizard.panelListener != null) {
             // Calculate the radio while dragging.
             float radio = top / topViewHeight;
+            lastSlidingRatio = radio;
             wizard.panelListener.onSliding(radio);
             if (radio > wizard.refreshRadio && !isRefreshing) {
                 wizard.panelListener.onRefresh();
@@ -260,6 +265,7 @@ public class DragTopLayout extends FrameLayout {
             }
             dragHelper.settleCapturedViewAt(releasedChild.getLeft(), top);
             postInvalidate();
+          Log.d("Drag", "view release "+releasedChild);
         }
 
         @Override
@@ -278,6 +284,9 @@ public class DragTopLayout extends FrameLayout {
             if (wizard.panelListener != null) {
                 wizard.panelListener.onPanelStateChanged(panelState);
             }
+
+
+          Log.d("Drag", "state  "+state +  " "+ panelState);
             super.onViewDragStateChanged(state);
         }
     };
@@ -293,9 +302,19 @@ public class DragTopLayout extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         try {
+
+
+          boolean intercept = shouldIntercept && dragHelper.shouldInterceptTouchEvent(ev);
+          Log.d("Drag", "intercept " +intercept + " "+downFaked );
             // java.lang.NullPointerException: Attempt to read from null array
             // at android.support.v4.widget.ViewDragHelper.shouldInterceptTouchEvent(ViewDragHelper.java:1011)
-            return shouldIntercept && dragHelper.shouldInterceptTouchEvent(ev);
+
+
+          if (lastSlidingRatio == 0 && downFaked){
+            return false;
+          }
+
+            return intercept;
         }catch (NullPointerException e){
             e.printStackTrace();
         }
@@ -305,6 +324,20 @@ public class DragTopLayout extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         dragHelper.processTouchEvent(event);
+
+      final int action = MotionEventCompat.getActionMasked(event);
+      Log.d("Drag", "touch " + action + " state "+panelState );
+
+
+      if (action == MotionEvent.ACTION_MOVE && lastSlidingRatio == 0){
+        if (!downFaked) {
+          event.setAction(MotionEvent.ACTION_DOWN);
+          downFaked = true;
+        }
+
+        dispatchTouchEvent(event);
+      }
+
         return true;
     }
 
@@ -320,9 +353,11 @@ public class DragTopLayout extends FrameLayout {
             if (wizard.initOpen) {
                 panelState = PanelState.EXPANDED;
                 wizard.panelListener.onSliding(1.0f);
+              lastSlidingRatio = 1;
             }else{
                 panelState = PanelState.COLLAPSED;
                 wizard.panelListener.onSliding(0f);
+              lastSlidingRatio = 0;
             }
         }
 
