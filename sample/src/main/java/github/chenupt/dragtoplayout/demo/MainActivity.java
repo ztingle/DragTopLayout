@@ -156,6 +156,7 @@ public class MainActivity extends ActionBarActivity {
             return true;
         }  else if(id == R.id.action_offset){
             if (dragLayout.getCollapseOffset() == 0){
+                dragLayout.openTopView(true);
                 dragLayout.setCollapseOffset(200);
             } else {
                 dragLayout.setCollapseOffset(0);
