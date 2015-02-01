@@ -44,8 +44,10 @@ public class DragTopLayout extends FrameLayout {
   private int contentTop;
   private int topViewHeight;
   private boolean isRefreshing;
+
+  // Used for scrolling
   private float lastSlidingRatio = 0;
-  private boolean downFaked = false;
+  private boolean dispatchingDownFaked = false;
   private boolean dispatchingDragContentView = false;
   private float dispatchingChildrenStartedAtY = Integer.MAX_VALUE;
 
@@ -299,13 +301,13 @@ public class DragTopLayout extends FrameLayout {
     try {
 
       boolean intercept = shouldIntercept && dragHelper.shouldInterceptTouchEvent(ev);
-      // Log.d("Drag", "intercept " + intercept + " " + downFaked);
+      // Log.d("Drag", "intercept " + intercept + " " + dispatchingDownFaked);
       // java.lang.NullPointerException: Attempt to read from null array
       // at android.support.v4.widget.ViewDragHelper.shouldInterceptTouchEvent(ViewDragHelper.java:1011)
 
 
           /*
-          if (lastSlidingRatio == 0 && downFaked){
+          if (lastSlidingRatio == 0 && dispatchingDownFaked){
             return false;
           }
           */
@@ -335,10 +337,10 @@ public class DragTopLayout extends FrameLayout {
 
     if (action == MotionEvent.ACTION_MOVE && lastSlidingRatio == 0) {
       dispatchingDragContentView = true;
-      if (!downFaked) {
+      if (!dispatchingDownFaked) {
         dispatchingChildrenStartedAtY = event.getY();
         event.setAction(MotionEvent.ACTION_DOWN);
-        downFaked = true;
+        dispatchingDownFaked = true;
       }
 
       dragContentView.dispatchTouchEvent(event);
@@ -354,7 +356,7 @@ public class DragTopLayout extends FrameLayout {
   }
 
   private void resetDispatchingContentView(){
-    downFaked = false;
+    dispatchingDownFaked = false;
     dispatchingDragContentView = false;
     dispatchingChildrenStartedAtY = Integer.MAX_VALUE;
   }
