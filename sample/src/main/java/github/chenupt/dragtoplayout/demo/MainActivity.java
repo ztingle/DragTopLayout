@@ -75,7 +75,6 @@ public class MainActivity extends ActionBarActivity {
         // init DragTopLayout
         DragTopLayout.from(this)
                 .open()
-                .setCollapseOffset(200)
                 .listener(new DragTopLayout.SimplePanelListener() {
                     @Override
                     public void onSliding(float radio) {
