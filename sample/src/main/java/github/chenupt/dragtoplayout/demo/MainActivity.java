@@ -77,8 +77,8 @@ public class MainActivity extends ActionBarActivity {
                 .open()
                 .listener(new DragTopLayout.SimplePanelListener() {
                     @Override
-                    public void onSliding(float radio) {
-                        Log.d(TAG, "sliding: " + radio);
+                    public void onSliding(float ratio) {
+                        Log.d(TAG, "sliding: " + ratio);
                     }
                 }).setup(dragLayout);
 

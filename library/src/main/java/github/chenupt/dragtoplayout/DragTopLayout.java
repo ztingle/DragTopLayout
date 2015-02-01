@@ -23,7 +23,6 @@ import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -213,18 +212,18 @@ public class DragTopLayout extends FrameLayout {
     return wizard.collapseOffset;
   }
 
-  private void calculateRadio(float top) {
+  private void calculateRatio(float top) {
 
-    float radio = top / topViewHeight;
-    lastSlidingRatio = radio;
-    if (dispatchingChildrenContentView && radio > dispatchingChildrenAtRatio) {
+    float ratio = top / topViewHeight;
+    lastSlidingRatio = ratio;
+    if (dispatchingChildrenContentView && ratio > dispatchingChildrenAtRatio) {
       resetDispatchingContentView();
     }
 
     if (wizard.panelListener != null) {
-      // Calculate the radio while dragging.
-      wizard.panelListener.onSliding(radio);
-      if (radio > wizard.refreshRadio && !isRefreshing) {
+      // Calculate the ratio while dragging.
+      wizard.panelListener.onSliding(ratio);
+      if (ratio > wizard.refreshRatio && !isRefreshing) {
         wizard.panelListener.onRefresh();
         isRefreshing = true;
       }
@@ -246,7 +245,7 @@ public class DragTopLayout extends FrameLayout {
       super.onViewPositionChanged(changedView, left, top, dx, dy);
       contentTop = top;
       requestLayout();
-      calculateRadio(contentTop);
+      calculateRatio(contentTop);
     }
 
     @Override
@@ -350,11 +349,9 @@ public class DragTopLayout extends FrameLayout {
       }
 
       dragContentView.dispatchTouchEvent(event);
-      Log.d("Drag", "started " + dispatchingChildrenStartedAtY + " " + event.getY());
     }
 
     if (dispatchingChildrenContentView && dispatchingChildrenStartedAtY < event.getY()) {
-      Log.d("Drag", "reset " + event.getY());
       resetDispatchingContentView();
     }
 
@@ -395,12 +392,12 @@ public class DragTopLayout extends FrameLayout {
 
     /**
      * Called while dragging.
-     * radio >= 0.
+     * ratio >= 0.
      */
-    public void onSliding(float radio);
+    public void onSliding(float ratio);
 
     /**
-     * Called while the radio over refreshRadio.
+     * Called while the ratio over refreshRatio.
      */
     public void onRefresh();
   }
@@ -413,7 +410,7 @@ public class DragTopLayout extends FrameLayout {
     }
 
     @Override
-    public void onSliding(float radio) {
+    public void onSliding(float ratio) {
 
     }
 
@@ -433,7 +430,7 @@ public class DragTopLayout extends FrameLayout {
     private Context context;
     private PanelListener panelListener;
     private boolean initOpen;
-    private float refreshRadio = 1.5f;
+    private float refreshRatio = 1.5f;
     private boolean overDrag = true;
     private int collapseOffset;
 
@@ -468,8 +465,8 @@ public class DragTopLayout extends FrameLayout {
      *
      * @return SetupWizard
      */
-    public SetupWizard setRefreshRadio(float radio) {
-      this.refreshRadio = radio;
+    public SetupWizard setRefreshRatio(float ratio) {
+      this.refreshRatio = ratio;
       return this;
     }
 
