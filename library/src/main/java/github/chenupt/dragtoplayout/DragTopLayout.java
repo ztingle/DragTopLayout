@@ -25,6 +25,7 @@ import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 
@@ -87,7 +88,6 @@ public class DragTopLayout extends FrameLayout {
         topView = getChildAt(0);
         dragContentView = getChildAt(1);
     }
-
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -197,6 +197,9 @@ public class DragTopLayout extends FrameLayout {
 
     public void setCollapseOffset(int px) {
         wizard.collapseOffset = px;
+        ViewGroup.LayoutParams layoutParams = dragContentView.getLayoutParams();
+        layoutParams.height = getHeight() - px;
+        dragContentView.setLayoutParams(layoutParams);
     }
 
     public int getCollapseOffset() {
