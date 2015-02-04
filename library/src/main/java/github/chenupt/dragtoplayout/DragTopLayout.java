@@ -297,7 +297,7 @@ public class DragTopLayout extends FrameLayout {
     }
 
     @Override
-    public Parcelable onSaveInstanceState() {
+    protected Parcelable onSaveInstanceState() {
 
       Parcelable superState = super.onSaveInstanceState();
       SavedState state = new SavedState(superState);
@@ -307,7 +307,7 @@ public class DragTopLayout extends FrameLayout {
     }
 
     @Override
-    public void onRestoreInstanceState(Parcelable state) {
+    protected void onRestoreInstanceState(Parcelable state) {
 
       if(!(state instanceof SavedState)) {
         super.onRestoreInstanceState(state);
