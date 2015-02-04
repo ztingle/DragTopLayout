@@ -19,6 +19,7 @@ package github.chenupt.dragtoplayout;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
@@ -53,9 +54,29 @@ public class DragTopLayout extends FrameLayout {
     private float dispatchingChildrenAtRatio = 0f;
 
     public static enum PanelState {
-        EXPANDED,
-        COLLAPSED,
-        SLIDING
+
+        COLLAPSED(0),
+        EXPANDED(1),
+        SLIDING(2);
+
+        private int asInt;
+
+      PanelState(int i){
+        this.asInt = i;
+      }
+
+      static PanelState fromInt(int i){
+        switch (i){
+          case 0 : return COLLAPSED;
+          case 2 : return SLIDING;
+          default:
+          case 1 : return EXPANDED;
+        }
+      }
+
+      public int toInt(){
+        return asInt;
+      }
     }
 
     private PanelState panelState = PanelState.COLLAPSED;
@@ -273,6 +294,35 @@ public class DragTopLayout extends FrameLayout {
                 isRefreshing = true;
             }
         }
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+
+      Parcelable superState = super.onSaveInstanceState();
+      SavedState state = new SavedState(superState);
+      state.panelState = panelState.toInt();
+
+      return state;
+    }
+
+    @Override
+    public void onRestoreInstanceState(Parcelable state) {
+
+      if(!(state instanceof SavedState)) {
+        super.onRestoreInstanceState(state);
+        return;
+      }
+
+      SavedState s = (SavedState)state;
+      super.onRestoreInstanceState(s.getSuperState());
+
+      this.panelState = PanelState.fromInt(s.panelState);
+      if (panelState == PanelState.COLLAPSED){
+        closeTopView(false);
+      } else {
+        openTopView(false);
+      }
     }
 
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
@@ -572,4 +622,17 @@ public class DragTopLayout extends FrameLayout {
             dragTopLayout.setupWizard();
         }
     }
+
+  /**
+   * Save the instance state
+   */
+  private static class SavedState  extends BaseSavedState {
+
+    int panelState;
+
+    SavedState(Parcelable superState) {
+      super(superState);
+    }
+
+  }
 }
