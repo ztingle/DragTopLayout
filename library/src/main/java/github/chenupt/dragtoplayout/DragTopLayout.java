@@ -84,17 +84,50 @@ public class DragTopLayout extends FrameLayout {
                 wizard.collapseOffset));
         wizard.setOverDrag(a.getBoolean(R.styleable.DragTopLayout_dtlOverDrag, wizard.overDrag));
         wizard.initOpen = a.getBoolean(R.styleable.DragTopLayout_dtlOpen, wizard.initOpen);
+        wizard.dragContentViewId = a.getResourceId(R.styleable.DragTopLayout_dtlDragContentView, -1);
+        wizard.topViewId = a.getResourceId(R.styleable.DragTopLayout_dtlTopView, -1);
         a.recycle();
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+
         if (getChildCount() < 2) {
-            throw new RuntimeException("Content view must contains two child views at least.");
+          throw new RuntimeException("Content view must contains two child views at least.");
         }
-        topView = getChildAt(0);
-        dragContentView = getChildAt(1);
+
+        if (wizard.topViewId != -1 && wizard.dragContentViewId == -1){
+            throw new IllegalArgumentException("You have set \"dtlTopView\" but not \"dtlDragContentView\". Both are required!");
+        }
+
+        if (wizard.dragContentViewId != -1 && wizard.topViewId == -1){
+            throw new IllegalArgumentException("You have set \"dtlDragContentView\" but not \"dtlTopView\". Both are required!");
+        }
+
+        if (wizard.dragContentViewId != -1 && wizard.topViewId != -1){
+          topView = findViewById(wizard.topViewId);
+          dragContentView = findViewById(wizard.dragContentViewId);
+
+          if (topView == null){
+            throw new IllegalArgumentException("\"dtlTopView\" with id = \"@id/"
+                + getResources().getResourceEntryName(wizard.topViewId)
+                + "\" has NOT been found. Is a child with that id in this "+getClass().getSimpleName()+"?");
+          }
+
+
+          if (dragContentView == null) {
+            throw new IllegalArgumentException("\"dtlDragContentView\" with id = \"@id/"
+                + getResources().getResourceEntryName(wizard.dragContentViewId)
+                + "\" has NOT been found. Is a child with that id in this "
+                + getClass().getSimpleName()
+                + "?");
+          }
+
+        } else {
+          topView = getChildAt(0);
+          dragContentView = getChildAt(1);
+        }
     }
 
     @Override
@@ -345,7 +378,13 @@ public class DragTopLayout extends FrameLayout {
         final int action = MotionEventCompat.getActionMasked(event);
 
         if (!dispatchingChildrenContentView) {
+          try {
+            // There seems to be a bug on certain devices: "pointerindex out of range" in viewdraghelper
+            // https://github.com/umano/AndroidSlidingUpPanel/issues/351
             dragHelper.processTouchEvent(event);
+          } catch (Exception e){
+            e.printStackTrace();
+          }
         }
 
         if (action == MotionEvent.ACTION_MOVE && lastSlidingRatio == dispatchingChildrenAtRatio) {
@@ -442,12 +481,13 @@ public class DragTopLayout extends FrameLayout {
     }
 
     public static final class SetupWizard {
-        private Context context;
         private PanelListener panelListener;
         private boolean initOpen;
         private float refreshRatio = 1.5f;
         private boolean overDrag = true;
         private int collapseOffset;
+        private int topViewId = -1;
+        private int dragContentViewId = -1;
 
         public SetupWizard() {
 
@@ -504,6 +544,28 @@ public class DragTopLayout extends FrameLayout {
         public SetupWizard setCollapseOffset(int px) {
             this.collapseOffset = px;
             return this;
+        }
+
+      /**
+       * Set the content view. Pass the id of the view (R.id.xxxxx).
+       * This one will be set as the content view and will be dragged together with the topView
+       * @param id The id (R.id.xxxxx) of the content view.
+       * @return
+       */
+        public SetupWizard setDragContentViewId(int id){
+          this.dragContentViewId = id;
+          return this;
+        }
+
+      /**
+       * Set the top view. The top view is the header view that will be dragged out.
+       * Pass the id of the view (R.id.xxxxx)
+       * @param id The id (R.id.xxxxx) of the top view
+       * @return
+       */
+        public SetupWizard setTopViewId(int id){
+          this.dragContentViewId = id;
+          return this;
         }
 
         public void setup(DragTopLayout dragTopLayout) {
