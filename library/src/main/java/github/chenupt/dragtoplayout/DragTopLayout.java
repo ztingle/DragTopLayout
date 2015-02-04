@@ -623,16 +623,16 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
-  /**
-   * Save the instance state
-   */
-  private static class SavedState  extends BaseSavedState {
+    /**
+     * Save the instance state
+     */
+    private static class SavedState  extends BaseSavedState {
 
-    int panelState;
+      int panelState;
 
-    SavedState(Parcelable superState) {
-      super(superState);
+      SavedState(Parcelable superState) {
+        super(superState);
+      }
+  
     }
-
-  }
 }
