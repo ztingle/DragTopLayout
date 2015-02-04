@@ -29,9 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:dtlOverDrag="true"
-            app:dtlOpen="true"
-            app:dtlTopView="@+id/top_view"
-            app:dtlDragContentView="@+id/drag_content_view">
+            app:dtlOpen="true">
 
             <!--top view-->
             <LinearLayout
