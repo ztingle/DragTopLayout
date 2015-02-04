@@ -26,4 +26,5 @@ dependencies {
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.google.guava:guava:18.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.8'
+    compile 'com.getbase:floatingactionbutton:1.7.0'
 }

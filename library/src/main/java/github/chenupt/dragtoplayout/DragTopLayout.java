@@ -19,6 +19,7 @@ package github.chenupt.dragtoplayout;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.ViewDragHelper;
@@ -53,9 +54,29 @@ public class DragTopLayout extends FrameLayout {
     private float dispatchingChildrenAtRatio = 0f;
 
     public static enum PanelState {
-        EXPANDED,
-        COLLAPSED,
-        SLIDING
+
+        COLLAPSED(0),
+        EXPANDED(1),
+        SLIDING(2);
+
+        private int asInt;
+
+      PanelState(int i){
+        this.asInt = i;
+      }
+
+      static PanelState fromInt(int i){
+        switch (i){
+          case 0 : return COLLAPSED;
+          case 2 : return SLIDING;
+          default:
+          case 1 : return EXPANDED;
+        }
+      }
+
+      public int toInt(){
+        return asInt;
+      }
     }
 
     private PanelState panelState = PanelState.COLLAPSED;
@@ -84,17 +105,50 @@ public class DragTopLayout extends FrameLayout {
                 wizard.collapseOffset));
         wizard.setOverDrag(a.getBoolean(R.styleable.DragTopLayout_dtlOverDrag, wizard.overDrag));
         wizard.initOpen = a.getBoolean(R.styleable.DragTopLayout_dtlOpen, wizard.initOpen);
+        wizard.dragContentViewId = a.getResourceId(R.styleable.DragTopLayout_dtlDragContentView, -1);
+        wizard.topViewId = a.getResourceId(R.styleable.DragTopLayout_dtlTopView, -1);
         a.recycle();
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+
         if (getChildCount() < 2) {
-            throw new RuntimeException("Content view must contains two child views at least.");
+          throw new RuntimeException("Content view must contains two child views at least.");
         }
-        topView = getChildAt(0);
-        dragContentView = getChildAt(1);
+
+        if (wizard.topViewId != -1 && wizard.dragContentViewId == -1){
+            throw new IllegalArgumentException("You have set \"dtlTopView\" but not \"dtlDragContentView\". Both are required!");
+        }
+
+        if (wizard.dragContentViewId != -1 && wizard.topViewId == -1){
+            throw new IllegalArgumentException("You have set \"dtlDragContentView\" but not \"dtlTopView\". Both are required!");
+        }
+
+        if (wizard.dragContentViewId != -1 && wizard.topViewId != -1){
+          topView = findViewById(wizard.topViewId);
+          dragContentView = findViewById(wizard.dragContentViewId);
+
+          if (topView == null){
+            throw new IllegalArgumentException("\"dtlTopView\" with id = \"@id/"
+                + getResources().getResourceEntryName(wizard.topViewId)
+                + "\" has NOT been found. Is a child with that id in this "+getClass().getSimpleName()+"?");
+          }
+
+
+          if (dragContentView == null) {
+            throw new IllegalArgumentException("\"dtlDragContentView\" with id = \"@id/"
+                + getResources().getResourceEntryName(wizard.dragContentViewId)
+                + "\" has NOT been found. Is a child with that id in this "
+                + getClass().getSimpleName()
+                + "?");
+          }
+
+        } else {
+          topView = getChildAt(0);
+          dragContentView = getChildAt(1);
+        }
     }
 
     @Override
@@ -242,6 +296,35 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
+    @Override
+    protected Parcelable onSaveInstanceState() {
+
+      Parcelable superState = super.onSaveInstanceState();
+      SavedState state = new SavedState(superState);
+      state.panelState = panelState.toInt();
+
+      return state;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+
+      if(!(state instanceof SavedState)) {
+        super.onRestoreInstanceState(state);
+        return;
+      }
+
+      SavedState s = (SavedState)state;
+      super.onRestoreInstanceState(s.getSuperState());
+
+      this.panelState = PanelState.fromInt(s.panelState);
+      if (panelState == PanelState.COLLAPSED){
+        closeTopView(false);
+      } else {
+        openTopView(false);
+      }
+    }
+
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
@@ -345,7 +428,13 @@ public class DragTopLayout extends FrameLayout {
         final int action = MotionEventCompat.getActionMasked(event);
 
         if (!dispatchingChildrenContentView) {
+          try {
+            // There seems to be a bug on certain devices: "pointerindex out of range" in viewdraghelper
+            // https://github.com/umano/AndroidSlidingUpPanel/issues/351
             dragHelper.processTouchEvent(event);
+          } catch (Exception e){
+            e.printStackTrace();
+          }
         }
 
         if (action == MotionEvent.ACTION_MOVE && lastSlidingRatio == dispatchingChildrenAtRatio) {
@@ -442,12 +531,13 @@ public class DragTopLayout extends FrameLayout {
     }
 
     public static final class SetupWizard {
-        private Context context;
         private PanelListener panelListener;
         private boolean initOpen;
         private float refreshRatio = 1.5f;
         private boolean overDrag = true;
         private int collapseOffset;
+        private int topViewId = -1;
+        private int dragContentViewId = -1;
 
         public SetupWizard() {
 
@@ -506,8 +596,43 @@ public class DragTopLayout extends FrameLayout {
             return this;
         }
 
+      /**
+       * Set the content view. Pass the id of the view (R.id.xxxxx).
+       * This one will be set as the content view and will be dragged together with the topView
+       * @param id The id (R.id.xxxxx) of the content view.
+       * @return
+       */
+        public SetupWizard setDragContentViewId(int id){
+          this.dragContentViewId = id;
+          return this;
+        }
+
+      /**
+       * Set the top view. The top view is the header view that will be dragged out.
+       * Pass the id of the view (R.id.xxxxx)
+       * @param id The id (R.id.xxxxx) of the top view
+       * @return
+       */
+        public SetupWizard setTopViewId(int id){
+          this.dragContentViewId = id;
+          return this;
+        }
+
         public void setup(DragTopLayout dragTopLayout) {
             dragTopLayout.setupWizard();
         }
+    }
+
+    /**
+     * Save the instance state
+     */
+    private static class SavedState  extends BaseSavedState {
+
+      int panelState;
+
+      SavedState(Parcelable superState) {
+        super(superState);
+      }
+  
     }
 }

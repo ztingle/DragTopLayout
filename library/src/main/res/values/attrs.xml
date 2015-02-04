@@ -11,5 +11,11 @@
         <!--Open the top view after the drag layout is created. The default value is false.-->
         <attr name="dtlOpen" format="boolean"/>
 
+        <!-- The id of the top view (which will be dragged) -->
+        <attr name="dtlTopView" format="reference" />
+
+        <!-- The content view which will be dragged together with "dtlTopView" -->
+        <attr name="dtlDragContentView" format="reference" />
+
     </declare-styleable>
 </resources>
