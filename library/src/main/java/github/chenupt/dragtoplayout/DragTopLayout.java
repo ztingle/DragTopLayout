@@ -61,22 +61,25 @@ public class DragTopLayout extends FrameLayout {
 
         private int asInt;
 
-      PanelState(int i){
-        this.asInt = i;
-      }
-
-      static PanelState fromInt(int i){
-        switch (i){
-          case 0 : return COLLAPSED;
-          case 2 : return SLIDING;
-          default:
-          case 1 : return EXPANDED;
+        PanelState(int i) {
+            this.asInt = i;
         }
-      }
 
-      public int toInt(){
-        return asInt;
-      }
+        static PanelState fromInt(int i) {
+            switch (i) {
+                case 0:
+                    return COLLAPSED;
+                case 2:
+                    return SLIDING;
+                default:
+                case 1:
+                    return EXPANDED;
+            }
+        }
+
+        public int toInt() {
+            return asInt;
+        }
     }
 
     private PanelState panelState = PanelState.COLLAPSED;
@@ -115,39 +118,39 @@ public class DragTopLayout extends FrameLayout {
         super.onFinishInflate();
 
         if (getChildCount() < 2) {
-          throw new RuntimeException("Content view must contains two child views at least.");
+            throw new RuntimeException("Content view must contains two child views at least.");
         }
 
-        if (wizard.topViewId != -1 && wizard.dragContentViewId == -1){
+        if (wizard.topViewId != -1 && wizard.dragContentViewId == -1) {
             throw new IllegalArgumentException("You have set \"dtlTopView\" but not \"dtlDragContentView\". Both are required!");
         }
 
-        if (wizard.dragContentViewId != -1 && wizard.topViewId == -1){
+        if (wizard.dragContentViewId != -1 && wizard.topViewId == -1) {
             throw new IllegalArgumentException("You have set \"dtlDragContentView\" but not \"dtlTopView\". Both are required!");
         }
 
-        if (wizard.dragContentViewId != -1 && wizard.topViewId != -1){
-          topView = findViewById(wizard.topViewId);
-          dragContentView = findViewById(wizard.dragContentViewId);
+        if (wizard.dragContentViewId != -1 && wizard.topViewId != -1) {
+            topView = findViewById(wizard.topViewId);
+            dragContentView = findViewById(wizard.dragContentViewId);
 
-          if (topView == null){
-            throw new IllegalArgumentException("\"dtlTopView\" with id = \"@id/"
-                + getResources().getResourceEntryName(wizard.topViewId)
-                + "\" has NOT been found. Is a child with that id in this "+getClass().getSimpleName()+"?");
-          }
+            if (topView == null) {
+                throw new IllegalArgumentException("\"dtlTopView\" with id = \"@id/"
+                        + getResources().getResourceEntryName(wizard.topViewId)
+                        + "\" has NOT been found. Is a child with that id in this " + getClass().getSimpleName() + "?");
+            }
 
 
-          if (dragContentView == null) {
-            throw new IllegalArgumentException("\"dtlDragContentView\" with id = \"@id/"
-                + getResources().getResourceEntryName(wizard.dragContentViewId)
-                + "\" has NOT been found. Is a child with that id in this "
-                + getClass().getSimpleName()
-                + "?");
-          }
+            if (dragContentView == null) {
+                throw new IllegalArgumentException("\"dtlDragContentView\" with id = \"@id/"
+                        + getResources().getResourceEntryName(wizard.dragContentViewId)
+                        + "\" has NOT been found. Is a child with that id in this "
+                        + getClass().getSimpleName()
+                        + "?");
+            }
 
         } else {
-          topView = getChildAt(0);
-          dragContentView = getChildAt(1);
+            topView = getChildAt(0);
+            dragContentView = getChildAt(1);
         }
     }
 
@@ -179,7 +182,7 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
-    private void resetContentHeight(){
+    private void resetContentHeight() {
         if (shouldUpdateContentHeight) {
             ViewGroup.LayoutParams layoutParams = dragContentView.getLayoutParams();
             layoutParams.height = getHeight() - wizard.collapseOffset;
@@ -299,30 +302,30 @@ public class DragTopLayout extends FrameLayout {
     @Override
     protected Parcelable onSaveInstanceState() {
 
-      Parcelable superState = super.onSaveInstanceState();
-      SavedState state = new SavedState(superState);
-      state.panelState = panelState.toInt();
+        Parcelable superState = super.onSaveInstanceState();
+        SavedState state = new SavedState(superState);
+        state.panelState = panelState.toInt();
 
-      return state;
+        return state;
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
 
-      if(!(state instanceof SavedState)) {
-        super.onRestoreInstanceState(state);
-        return;
-      }
+        if (!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
 
-      SavedState s = (SavedState)state;
-      super.onRestoreInstanceState(s.getSuperState());
+        SavedState s = (SavedState) state;
+        super.onRestoreInstanceState(s.getSuperState());
 
-      this.panelState = PanelState.fromInt(s.panelState);
-      if (panelState == PanelState.COLLAPSED){
-        closeTopView(false);
-      } else {
-        openTopView(false);
-      }
+        this.panelState = PanelState.fromInt(s.panelState);
+        if (panelState == PanelState.COLLAPSED) {
+            closeTopView(false);
+        } else {
+            openTopView(false);
+        }
     }
 
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
@@ -428,13 +431,13 @@ public class DragTopLayout extends FrameLayout {
         final int action = MotionEventCompat.getActionMasked(event);
 
         if (!dispatchingChildrenContentView) {
-          try {
-            // There seems to be a bug on certain devices: "pointerindex out of range" in viewdraghelper
-            // https://github.com/umano/AndroidSlidingUpPanel/issues/351
-            dragHelper.processTouchEvent(event);
-          } catch (Exception e){
-            e.printStackTrace();
-          }
+            try {
+                // There seems to be a bug on certain devices: "pointerindex out of range" in viewdraghelper
+                // https://github.com/umano/AndroidSlidingUpPanel/issues/351
+                dragHelper.processTouchEvent(event);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         if (action == MotionEvent.ACTION_MOVE && lastSlidingRatio == dispatchingChildrenAtRatio) {
@@ -470,7 +473,7 @@ public class DragTopLayout extends FrameLayout {
 
     private void setupWizard() {
         // fix the content height with collapse offset
-        if(wizard.collapseOffset != 0){
+        if (wizard.collapseOffset != 0) {
             shouldUpdateContentHeight = true;
         }
 
@@ -596,26 +599,28 @@ public class DragTopLayout extends FrameLayout {
             return this;
         }
 
-      /**
-       * Set the content view. Pass the id of the view (R.id.xxxxx).
-       * This one will be set as the content view and will be dragged together with the topView
-       * @param id The id (R.id.xxxxx) of the content view.
-       * @return
-       */
-        public SetupWizard setDragContentViewId(int id){
-          this.dragContentViewId = id;
-          return this;
+        /**
+         * Set the content view. Pass the id of the view (R.id.xxxxx).
+         * This one will be set as the content view and will be dragged together with the topView
+         *
+         * @param id The id (R.id.xxxxx) of the content view.
+         * @return
+         */
+        public SetupWizard setDragContentViewId(int id) {
+            this.dragContentViewId = id;
+            return this;
         }
 
-      /**
-       * Set the top view. The top view is the header view that will be dragged out.
-       * Pass the id of the view (R.id.xxxxx)
-       * @param id The id (R.id.xxxxx) of the top view
-       * @return
-       */
-        public SetupWizard setTopViewId(int id){
-          this.dragContentViewId = id;
-          return this;
+        /**
+         * Set the top view. The top view is the header view that will be dragged out.
+         * Pass the id of the view (R.id.xxxxx)
+         *
+         * @param id The id (R.id.xxxxx) of the top view
+         * @return
+         */
+        public SetupWizard setTopViewId(int id) {
+            this.dragContentViewId = id;
+            return this;
         }
 
         public void setup(DragTopLayout dragTopLayout) {
@@ -626,13 +631,13 @@ public class DragTopLayout extends FrameLayout {
     /**
      * Save the instance state
      */
-    private static class SavedState  extends BaseSavedState {
+    private static class SavedState extends BaseSavedState {
 
-      int panelState;
+        int panelState;
 
-      SavedState(Parcelable superState) {
-        super(superState);
-      }
-  
+        SavedState(Parcelable superState) {
+            super(superState);
+        }
+
     }
 }
