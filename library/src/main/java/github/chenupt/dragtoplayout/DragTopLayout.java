@@ -456,6 +456,7 @@ public class DragTopLayout extends FrameLayout {
 
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
             resetDispatchingContentView();
+            dragContentView.dispatchTouchEvent(event);
         }
 
         return true;
