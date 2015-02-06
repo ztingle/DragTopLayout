@@ -35,7 +35,6 @@ import android.widget.FrameLayout;
  */
 public class DragTopLayout extends FrameLayout {
 
-    private static SetupWizard wizard;
     private ViewDragHelper dragHelper;
     private int dragRange;
     private View dragContentView;
@@ -44,7 +43,14 @@ public class DragTopLayout extends FrameLayout {
     private int contentTop;
     private int topViewHeight;
     private boolean isRefreshing;
-    private boolean shouldUpdateContentHeight;
+    private boolean shouldIntercept = true;
+
+    private PanelListener panelListener;
+    private float refreshRatio = 1.5f;
+    private boolean overDrag = true;
+    private int collapseOffset;
+    private int topViewId = -1;
+    private int dragContentViewId = -1;
 
     // Used for scrolling
     private float lastSlidingRatio = 0;
@@ -53,6 +59,7 @@ public class DragTopLayout extends FrameLayout {
     private float dispatchingChildrenStartedAtY = Float.MAX_VALUE;
     private float dispatchingChildrenAtRatio = 0f;
 
+    private PanelState panelState = PanelState.EXPANDED;
     public static enum PanelState {
 
         COLLAPSED(0),
@@ -82,8 +89,7 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
-    private PanelState panelState = PanelState.COLLAPSED;
-    private boolean shouldIntercept = true;
+
 
     public DragTopLayout(Context context) {
         this(context, null);
@@ -99,18 +105,24 @@ public class DragTopLayout extends FrameLayout {
     }
 
     private void init(AttributeSet attrs) {
-        wizard = new SetupWizard();
         dragHelper = ViewDragHelper.create(this, 1.0f, callback);
 
         // init from attrs
         TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.DragTopLayout);
-        wizard.setCollapseOffset(a.getDimensionPixelSize(R.styleable.DragTopLayout_dtlCollapseOffset,
-                wizard.collapseOffset));
-        wizard.setOverDrag(a.getBoolean(R.styleable.DragTopLayout_dtlOverDrag, wizard.overDrag));
-        wizard.initOpen = a.getBoolean(R.styleable.DragTopLayout_dtlOpen, wizard.initOpen);
-        wizard.dragContentViewId = a.getResourceId(R.styleable.DragTopLayout_dtlDragContentView, -1);
-        wizard.topViewId = a.getResourceId(R.styleable.DragTopLayout_dtlTopView, -1);
+        setCollapseOffset(a.getDimensionPixelSize(R.styleable.DragTopLayout_dtlCollapseOffset, collapseOffset));
+        overDrag = a.getBoolean(R.styleable.DragTopLayout_dtlOverDrag, overDrag);
+        dragContentViewId = a.getResourceId(R.styleable.DragTopLayout_dtlDragContentView, -1);
+        topViewId = a.getResourceId(R.styleable.DragTopLayout_dtlTopView, -1);
+        initOpen(a.getBoolean(R.styleable.DragTopLayout_dtlOpen, true));
         a.recycle();
+    }
+
+    private void initOpen(boolean initOpen){
+        if (initOpen) {
+            panelState = PanelState.EXPANDED;
+        } else {
+            panelState = PanelState.COLLAPSED;
+        }
     }
 
     @Override
@@ -121,28 +133,28 @@ public class DragTopLayout extends FrameLayout {
             throw new RuntimeException("Content view must contains two child views at least.");
         }
 
-        if (wizard.topViewId != -1 && wizard.dragContentViewId == -1) {
+        if (topViewId != -1 && dragContentViewId == -1) {
             throw new IllegalArgumentException("You have set \"dtlTopView\" but not \"dtlDragContentView\". Both are required!");
         }
 
-        if (wizard.dragContentViewId != -1 && wizard.topViewId == -1) {
+        if (dragContentViewId != -1 && topViewId == -1) {
             throw new IllegalArgumentException("You have set \"dtlDragContentView\" but not \"dtlTopView\". Both are required!");
         }
 
-        if (wizard.dragContentViewId != -1 && wizard.topViewId != -1) {
-            topView = findViewById(wizard.topViewId);
-            dragContentView = findViewById(wizard.dragContentViewId);
+        if (dragContentViewId != -1 && topViewId != -1) {
+            topView = findViewById(topViewId);
+            dragContentView = findViewById(dragContentViewId);
 
             if (topView == null) {
                 throw new IllegalArgumentException("\"dtlTopView\" with id = \"@id/"
-                        + getResources().getResourceEntryName(wizard.topViewId)
+                        + getResources().getResourceEntryName(topViewId)
                         + "\" has NOT been found. Is a child with that id in this " + getClass().getSimpleName() + "?");
             }
 
 
             if (dragContentView == null) {
                 throw new IllegalArgumentException("\"dtlDragContentView\" with id = \"@id/"
-                        + getResources().getResourceEntryName(wizard.dragContentViewId)
+                        + getResources().getResourceEntryName(dragContentViewId)
                         + "\" has NOT been found. Is a child with that id in this "
                         + getClass().getSimpleName()
                         + "?");
@@ -177,22 +189,24 @@ public class DragTopLayout extends FrameLayout {
             if (panelState == PanelState.EXPANDED) {
                 contentTop = newTopHeight;
                 handleSlide(newTopHeight);
+            } else if(panelState == PanelState.COLLAPSED){
+                // update the drag content top when it is collapsed.
+                contentTop = collapseOffset;
             }
             topViewHeight = newTopHeight;
         }
     }
 
     private void resetContentHeight() {
-        if (shouldUpdateContentHeight) {
+        if (dragContentView != null && dragContentView.getHeight() != 0) {
             ViewGroup.LayoutParams layoutParams = dragContentView.getLayoutParams();
-            layoutParams.height = getHeight() - wizard.collapseOffset;
+            layoutParams.height = getHeight() - collapseOffset;
             dragContentView.setLayoutParams(layoutParams);
-            shouldUpdateContentHeight = false;
         }
     }
 
     private void setDispatchingChildrenAtRatio() {
-        dispatchingChildrenAtRatio = ((float) wizard.collapseOffset) / ((float) topViewHeight);
+        dispatchingChildrenAtRatio = ((float) collapseOffset) / ((float) topViewHeight);
     }
 
     private void handleSlide(final int top) {
@@ -205,35 +219,6 @@ public class DragTopLayout extends FrameLayout {
         });
     }
 
-    public void openTopView(boolean anim) {
-        resetDragContent(anim, topViewHeight);
-    }
-
-    public void closeTopView(boolean anim) {
-        resetDragContent(anim, 0);
-    }
-
-    public void toggleTopView() {
-        toggleTopView(false);
-    }
-
-    public void toggleTopView(boolean touchMode) {
-        switch (panelState) {
-            case COLLAPSED:
-                openTopView(true);
-                if (touchMode) {
-                    setTouchMode(true);
-                }
-                break;
-            case EXPANDED:
-                closeTopView(true);
-                if (touchMode) {
-                    setTouchMode(false);
-                }
-                break;
-        }
-    }
-
     private void resetDragContent(boolean anim, int top) {
         contentTop = top;
         if (anim) {
@@ -244,56 +229,18 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
-    public void setOverDrag(boolean overDrag) {
-        wizard.overDrag = overDrag;
-    }
-
-    public boolean isOverDrag() {
-        return wizard.overDrag;
-    }
-
-    /**
-     * Get refresh state
-     */
-    public boolean isRefreshing() {
-        return isRefreshing;
-    }
-
-    public void setRefreshing(boolean isRefreshing) {
-        this.isRefreshing = isRefreshing;
-    }
-
-    /**
-     * Complete refresh and reset the refresh state.
-     */
-    public void onRefreshComplete() {
-        isRefreshing = false;
-    }
-
-    public void setCollapseOffset(int px) {
-        wizard.collapseOffset = px;
-        shouldUpdateContentHeight = true;
-        resetContentHeight();
-        setDispatchingChildrenAtRatio();
-    }
-
-    public int getCollapseOffset() {
-        return wizard.collapseOffset;
-    }
-
     private void calculateRatio(float top) {
-
         float ratio = top / topViewHeight;
         lastSlidingRatio = ratio;
         if (dispatchingChildrenContentView && ratio > dispatchingChildrenAtRatio) {
             resetDispatchingContentView();
         }
 
-        if (wizard.panelListener != null) {
+        if (panelListener != null) {
             // Calculate the ratio while dragging.
-            wizard.panelListener.onSliding(ratio);
-            if (ratio > wizard.refreshRatio && !isRefreshing) {
-                wizard.panelListener.onRefresh();
+            panelListener.onSliding(ratio);
+            if (ratio > refreshRatio && !isRefreshing) {
+                panelListener.onRefresh();
                 isRefreshing = true;
             }
         }
@@ -313,7 +260,6 @@ public class DragTopLayout extends FrameLayout {
     protected void onRestoreInstanceState(Parcelable state) {
 
         if (!(state instanceof SavedState)) {
-            super.onRestoreInstanceState(state);
             return;
         }
 
@@ -353,11 +299,11 @@ public class DragTopLayout extends FrameLayout {
 
         @Override
         public int clampViewPositionVertical(View child, int top, int dy) {
-            if (wizard.overDrag) {
+            if (overDrag) {
                 // Drag over the top view height.
-                return Math.max(top, getPaddingTop() + wizard.collapseOffset);
+                return Math.max(top, getPaddingTop() + collapseOffset);
             } else {
-                return Math.min(topViewHeight, Math.max(top, getPaddingTop() + wizard.collapseOffset));
+                return Math.min(topViewHeight, Math.max(top, getPaddingTop() + collapseOffset));
             }
         }
 
@@ -369,7 +315,7 @@ public class DragTopLayout extends FrameLayout {
             if (yvel > 0 || contentTop > topViewHeight) {
                 top = topViewHeight + getPaddingTop();
             } else {
-                top = getPaddingTop() + wizard.collapseOffset;
+                top = getPaddingTop() + collapseOffset;
             }
             dragHelper.settleCapturedViewAt(releasedChild.getLeft(), top);
             postInvalidate();
@@ -380,7 +326,7 @@ public class DragTopLayout extends FrameLayout {
             // 1 -> 2 -> 0
             if (state == ViewDragHelper.STATE_IDLE) {
                 // Change the panel state while the drag content view is idle.
-                if (contentTop > getPaddingTop()) {
+                if (contentTop > getPaddingTop() + collapseOffset) {
                     panelState = PanelState.EXPANDED;
                 } else {
                     panelState = PanelState.COLLAPSED;
@@ -388,8 +334,8 @@ public class DragTopLayout extends FrameLayout {
             } else {
                 panelState = PanelState.SLIDING;
             }
-            if (wizard.panelListener != null) {
-                wizard.panelListener.onPanelStateChanged(panelState);
+            if (panelListener != null) {
+                panelListener.onPanelStateChanged(panelState);
             }
             super.onViewDragStateChanged(state);
         }
@@ -407,17 +353,6 @@ public class DragTopLayout extends FrameLayout {
         try {
 
             boolean intercept = shouldIntercept && dragHelper.shouldInterceptTouchEvent(ev);
-            // Log.d("Drag", "intercept " + intercept + " " + dispatchingChildrenDownFaked);
-            // java.lang.NullPointerException: Attempt to read from null array
-            // at android.support.v4.widget.ViewDragHelper.shouldInterceptTouchEvent(ViewDragHelper.java:1011)
-
-
-          /*
-          if (lastSlidingRatio == 0 && dispatchingChildrenDownFaked){
-            return false;
-          }
-          */
-
             return intercept;
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -456,7 +391,7 @@ public class DragTopLayout extends FrameLayout {
 
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
             resetDispatchingContentView();
-            dispatchTouchEvent(event);
+            dragContentView.dispatchTouchEvent(event);
         }
 
         return true;
@@ -468,29 +403,156 @@ public class DragTopLayout extends FrameLayout {
         dispatchingChildrenStartedAtY = Float.MAX_VALUE;
     }
 
-    public void setTouchMode(boolean shouldIntercept) {
-        this.shouldIntercept = shouldIntercept;
-    }
 
-    private void setupWizard() {
-        // fix the content height with collapse offset
-        if (wizard.collapseOffset != 0) {
-            shouldUpdateContentHeight = true;
-        }
+    //================
+    // public
+    //================
 
-        // init panel state
-        if (wizard.initOpen) {
+    public void openTopView(boolean anim) {
+        // Before created
+        if (dragContentView.getHeight() == 0) {
             panelState = PanelState.EXPANDED;
-            if (wizard.panelListener != null) {
-                wizard.panelListener.onSliding(1.0f);
+            if (panelListener != null) {
+                panelListener.onSliding(1.0f);
             }
         } else {
-            panelState = PanelState.COLLAPSED;
-            if (wizard.panelListener != null) {
-                wizard.panelListener.onSliding(0f);
-            }
+            resetDragContent(anim, topViewHeight);
         }
     }
+
+    public void closeTopView(boolean anim) {
+        if (dragContentView.getHeight() == 0) {
+            panelState = PanelState.COLLAPSED;
+            if (panelListener != null) {
+                panelListener.onSliding(0.0f);
+            }
+        }else{
+            resetDragContent(anim, getPaddingTop() + collapseOffset);
+        }
+    }
+
+    public void toggleTopView() {
+        toggleTopView(false);
+    }
+
+    public void toggleTopView(boolean touchMode) {
+        switch (panelState) {
+            case COLLAPSED:
+                openTopView(true);
+                if (touchMode) {
+                    setTouchMode(true);
+                }
+                break;
+            case EXPANDED:
+                closeTopView(true);
+                if (touchMode) {
+                    setTouchMode(false);
+                }
+                break;
+        }
+    }
+
+    public DragTopLayout setTouchMode(boolean shouldIntercept) {
+        this.shouldIntercept = shouldIntercept;
+        return this;
+    }
+
+    /**
+     * Setup the drag listener.
+     *
+     * @return SetupWizard
+     */
+    public DragTopLayout listener(PanelListener panelListener) {
+        this.panelListener = panelListener;
+        return this;
+    }
+
+    /**
+     * Set the refresh position while dragging you want.
+     * The default value is 1.5f.
+     *
+     * @return SetupWizard
+     */
+    public DragTopLayout setRefreshRatio(float ratio) {
+        this.refreshRatio = ratio;
+        return this;
+    }
+
+    /**
+     * Set enable drag over.
+     * The default value is true.
+     *
+     * @return SetupWizard
+     */
+    public DragTopLayout setOverDrag(boolean overDrag) {
+        this.overDrag = overDrag;
+        return this;
+    }
+
+    /**
+     * Set the content view. Pass the id of the view (R.id.xxxxx).
+     * This one will be set as the content view and will be dragged together with the topView
+     *
+     * @param id The id (R.id.xxxxx) of the content view.
+     * @return
+     */
+    public DragTopLayout setDragContentViewId(int id) {
+        this.dragContentViewId = id;
+        return this;
+    }
+
+    /**
+     * Set the top view. The top view is the header view that will be dragged out.
+     * Pass the id of the view (R.id.xxxxx)
+     *
+     * @param id The id (R.id.xxxxx) of the top view
+     * @return
+     */
+    public DragTopLayout setTopViewId(int id) {
+        this.dragContentViewId = id;
+        return this;
+    }
+
+    public boolean isOverDrag() {
+        return overDrag;
+    }
+
+    /**
+     * Get refresh state
+     */
+    public boolean isRefreshing() {
+        return isRefreshing;
+    }
+
+    public void setRefreshing(boolean isRefreshing) {
+        this.isRefreshing = isRefreshing;
+    }
+
+    /**
+     * Complete refresh and reset the refresh state.
+     */
+    public void onRefreshComplete() {
+        isRefreshing = false;
+    }
+
+    /**
+     * Set the collapse offset
+     *
+     * @return SetupWizard
+     */
+    public DragTopLayout setCollapseOffset(int px) {
+        collapseOffset = px;
+        resetContentHeight();
+        setDispatchingChildrenAtRatio();
+        return this;
+    }
+
+    public int getCollapseOffset() {
+        return collapseOffset;
+    }
+
+
+    // ---------------------
 
     public interface PanelListener {
         /**
@@ -525,107 +587,6 @@ public class DragTopLayout extends FrameLayout {
         @Override
         public void onRefresh() {
 
-        }
-    }
-
-    // -----------------
-
-    public static SetupWizard from(Context context) {
-        return wizard;
-    }
-
-    public static final class SetupWizard {
-        private PanelListener panelListener;
-        private boolean initOpen;
-        private float refreshRatio = 1.5f;
-        private boolean overDrag = true;
-        private int collapseOffset;
-        private int topViewId = -1;
-        private int dragContentViewId = -1;
-
-        public SetupWizard() {
-
-        }
-
-        /**
-         * Setup the drag listener.
-         *
-         * @return SetupWizard
-         */
-        public SetupWizard listener(PanelListener panelListener) {
-            this.panelListener = panelListener;
-            return this;
-        }
-
-        /**
-         * Open the top view after the drag layout is created.
-         * The default value is false.
-         *
-         * @return SetupWizard
-         */
-        public SetupWizard open() {
-            initOpen = true;
-            return this;
-        }
-
-        /**
-         * Set the refresh position while dragging you want.
-         * The default value is 1.5f.
-         *
-         * @return SetupWizard
-         */
-        public SetupWizard setRefreshRatio(float ratio) {
-            this.refreshRatio = ratio;
-            return this;
-        }
-
-        /**
-         * Set enable drag over.
-         * The default value is true.
-         *
-         * @return SetupWizard
-         */
-        public SetupWizard setOverDrag(boolean overDrag) {
-            this.overDrag = overDrag;
-            return this;
-        }
-
-        /**
-         * Set the collapse offset
-         *
-         * @return SetupWizard
-         */
-        public SetupWizard setCollapseOffset(int px) {
-            this.collapseOffset = px;
-            return this;
-        }
-
-        /**
-         * Set the content view. Pass the id of the view (R.id.xxxxx).
-         * This one will be set as the content view and will be dragged together with the topView
-         *
-         * @param id The id (R.id.xxxxx) of the content view.
-         * @return
-         */
-        public SetupWizard setDragContentViewId(int id) {
-            this.dragContentViewId = id;
-            return this;
-        }
-
-        /**
-         * Set the top view. The top view is the header view that will be dragged out.
-         * Pass the id of the view (R.id.xxxxx)
-         *
-         * @param id The id (R.id.xxxxx) of the top view
-         * @return
-         */
-        public SetupWizard setTopViewId(int id) {
-            this.dragContentViewId = id;
-            return this;
-        }
-
-        public void setup(DragTopLayout dragTopLayout) {
-            dragTopLayout.setupWizard();
         }
     }
 

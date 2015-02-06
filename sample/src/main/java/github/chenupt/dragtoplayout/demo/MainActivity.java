@@ -22,7 +22,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -73,15 +72,18 @@ public class MainActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
 
         // init DragTopLayout
-        DragTopLayout.from(this)
-                .open()
-                .listener(new DragTopLayout.SimplePanelListener() {
-                    @Override
-                    public void onSliding(float ratio) {
-                        Log.d(TAG, "sliding: " + ratio);
-                    }
-                })
-                .setup(dragLayout);
+//        DragTopLayout.from(this)
+//                .open()
+//                .listener(new DragTopLayout.SimplePanelListener() {
+//                    @Override
+//                    public void onSliding(float ratio) {
+//                        Log.d(TAG, "sliding: " + ratio);
+//                    }
+//                })
+//                .setup(dragLayout);
+
+        dragLayout.setOverDrag(false).setCollapseOffset(100);
+        dragLayout.closeTopView(false);
 
         // init pager
         PagerModelManager factory = new PagerModelManager();
