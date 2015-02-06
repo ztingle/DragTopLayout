@@ -42,6 +42,7 @@ public class DragTopLayout extends FrameLayout {
 
     private int contentTop;
     private int topViewHeight;
+    private float ratio;
     private boolean isRefreshing;
     private boolean shouldIntercept = true;
 
@@ -53,13 +54,13 @@ public class DragTopLayout extends FrameLayout {
     private int dragContentViewId = -1;
 
     // Used for scrolling
-    private float lastSlidingRatio = 0;
     private boolean dispatchingChildrenDownFaked = false;
     private boolean dispatchingChildrenContentView = false;
     private float dispatchingChildrenStartedAtY = Float.MAX_VALUE;
-    private float dispatchingChildrenAtRatio = 0f;
 
     private PanelState panelState = PanelState.EXPANDED;
+
+
     public static enum PanelState {
 
         COLLAPSED(0),
@@ -205,10 +206,6 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
-    private void setDispatchingChildrenAtRatio() {
-        dispatchingChildrenAtRatio = ((float) collapseOffset) / ((float) topViewHeight);
-    }
-
     private void handleSlide(final int top) {
         new Handler().post(new Runnable() {
             @Override
@@ -230,9 +227,8 @@ public class DragTopLayout extends FrameLayout {
     }
 
     private void calculateRatio(float top) {
-        float ratio = top / topViewHeight;
-        lastSlidingRatio = ratio;
-        if (dispatchingChildrenContentView && ratio > dispatchingChildrenAtRatio) {
+        ratio = (top-collapseOffset) / (topViewHeight - collapseOffset);
+        if (dispatchingChildrenContentView) {
             resetDispatchingContentView();
         }
 
@@ -377,7 +373,7 @@ public class DragTopLayout extends FrameLayout {
             }
         }
 
-        if (action == MotionEvent.ACTION_MOVE && lastSlidingRatio == dispatchingChildrenAtRatio) {
+        if (action == MotionEvent.ACTION_MOVE && ratio == 0.0f) {
             dispatchingChildrenContentView = true;
             if (!dispatchingChildrenDownFaked) {
                 dispatchingChildrenStartedAtY = event.getY();
@@ -545,7 +541,6 @@ public class DragTopLayout extends FrameLayout {
     public DragTopLayout setCollapseOffset(int px) {
         collapseOffset = px;
         resetContentHeight();
-        setDispatchingChildrenAtRatio();
         return this;
     }
 
