@@ -260,6 +260,8 @@ public class DragTopLayout extends FrameLayout {
     protected void onRestoreInstanceState(Parcelable state) {
 
         if (!(state instanceof SavedState)) {
+            // FIX #10
+            super.onRestoreInstanceState(BaseSavedState.EMPTY_STATE);
             return;
         }
 
