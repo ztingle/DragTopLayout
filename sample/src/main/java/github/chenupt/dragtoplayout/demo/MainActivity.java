@@ -71,19 +71,18 @@ public class MainActivity extends ActionBarActivity {
         toolbar.setTitle("DragTopLayout");
         setSupportActionBar(toolbar);
 
-        // init DragTopLayout
-//        DragTopLayout.from(this)
-//                .open()
+
+        // Optional setting or set them in your xml.
+//        dragLayout.setOverDrag(true)
+//                .setCollapseOffset(100)
 //                .listener(new DragTopLayout.SimplePanelListener() {
 //                    @Override
 //                    public void onSliding(float ratio) {
-//                        Log.d(TAG, "sliding: " + ratio);
+//                        super.onSliding(ratio);
 //                    }
 //                })
-//                .setup(dragLayout);
+//                .closeTopView(false);
 
-        dragLayout.setOverDrag(false).setCollapseOffset(100);
-        dragLayout.closeTopView(false);
 
         // init pager
         PagerModelManager factory = new PagerModelManager();
