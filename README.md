@@ -56,9 +56,9 @@ Add the DragTopLayout in your layout.
 Changelog
 ---
 ###v1.2.0
- * Support Scrolling continue #7.@sockeqwe
- * Retain state #8.@sockeqwe
- * Fixed #10, #5, #4.
+ * Support Scrolling continue [#7](https://github.com/chenupt/DragTopLayout/pull/7).@sockeqwe
+ * Retain state [#8](https://github.com/chenupt/DragTopLayout/pull/8).@sockeqwe
+ * Fixed [#10](https://github.com/chenupt/DragTopLayout/issues/10), [#5](https://github.com/chenupt/DragTopLayout/issues/5), [#4](https://github.com/chenupt/DragTopLayout/issues/4).
  * Remove wizard.
 
 ###v1.1.0
