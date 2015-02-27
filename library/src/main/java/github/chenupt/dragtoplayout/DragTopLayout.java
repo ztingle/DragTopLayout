@@ -405,7 +405,11 @@ public class DragTopLayout extends FrameLayout {
     //================
     // public
     //================
-
+    
+    public PanelState getState() {
+        return panelState;
+    }
+    
     public void openTopView(boolean anim) {
         // Before created
         if (dragContentView.getHeight() == 0) {
