@@ -518,7 +518,7 @@ public class DragTopLayout extends FrameLayout {
      * @return
      */
     public DragTopLayout setTopViewId(int id) {
-        this.dragContentViewId = id;
+        this.topViewId = id;
         return this;
     }
 
