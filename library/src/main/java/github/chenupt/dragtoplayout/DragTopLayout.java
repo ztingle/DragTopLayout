@@ -242,6 +242,20 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
+    private void updatePanelState(){
+        if (contentTop <= getPaddingTop() + collapseOffset) {
+            panelState = PanelState.COLLAPSED;
+        } else if(contentTop >= topView.getHeight()){
+            panelState = PanelState.EXPANDED;
+        } else {
+            panelState = PanelState.SLIDING;
+        }
+
+        if (panelListener != null) {
+            panelListener.onPanelStateChanged(panelState);
+        }
+    }
+
     @Override
     protected Parcelable onSaveInstanceState() {
 
@@ -288,6 +302,7 @@ public class DragTopLayout extends FrameLayout {
             contentTop = top;
             requestLayout();
             calculateRatio(contentTop);
+            updatePanelState();
         }
 
         @Override
@@ -321,20 +336,6 @@ public class DragTopLayout extends FrameLayout {
 
         @Override
         public void onViewDragStateChanged(int state) {
-            // 1 -> 2 -> 0
-            if (state == ViewDragHelper.STATE_IDLE) {
-                // Change the panel state while the drag content view is idle.
-                if (contentTop > getPaddingTop() + collapseOffset) {
-                    panelState = PanelState.EXPANDED;
-                } else {
-                    panelState = PanelState.COLLAPSED;
-                }
-            } else {
-                panelState = PanelState.SLIDING;
-            }
-            if (panelListener != null) {
-                panelListener.onPanelStateChanged(panelState);
-            }
             super.onViewDragStateChanged(state);
         }
     };
