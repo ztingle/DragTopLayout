@@ -23,6 +23,16 @@ dependencies {
 }
 ```
 
+1.2.1-SNAPSHOT
+```
+maven {
+    url "https://oss.sonatype.org/content/repositories/snapshots/"
+}
+
+dependencies {
+    compile 'com.github.chenupt.android:dragtoplayout:1.2.1-SNAPSHOT@aar'
+}
+```
 
 Add the DragTopLayout in your layout.
 
