@@ -433,6 +433,12 @@ public class DragTopLayout extends FrameLayout {
         }
     }
 
+    public void updateTopViewHeight(int height){
+        ViewGroup.LayoutParams layoutParams = topView.getLayoutParams();
+        layoutParams.height = height;
+        topView.setLayoutParams(layoutParams);
+    }
+
     public void toggleTopView() {
         toggleTopView(false);
     }
