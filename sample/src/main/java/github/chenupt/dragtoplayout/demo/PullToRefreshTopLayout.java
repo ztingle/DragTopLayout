@@ -11,13 +11,13 @@ import github.chenupt.dragtoplayout.DragTopLayout;
  * Created by chenupt@gmail.com on 3/3/15.
  * Description :
  */
-public class PullToRefreshLayout extends PullToRefreshBase<DragTopLayout> {
+public class PullToRefreshTopLayout extends PullToRefreshBase<DragTopLayout> {
 
-    public PullToRefreshLayout(Context context) {
+    public PullToRefreshTopLayout(Context context) {
         super(context);
     }
 
-    public PullToRefreshLayout(Context context, AttributeSet attrs) {
+    public PullToRefreshTopLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
