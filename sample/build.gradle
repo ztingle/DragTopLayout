@@ -27,4 +27,7 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.8'
     compile 'com.getbase:floatingactionbutton:1.7.0'
+
+    compile 'com.navercorp.pulltorefresh:library:3.2.0@aar'
+
 }

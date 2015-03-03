@@ -127,7 +127,7 @@ public class DragTopLayout extends FrameLayout {
     }
 
     @Override
-    protected void onFinishInflate() {
+    public void onFinishInflate() {
         super.onFinishInflate();
 
         if (getChildCount() < 2) {
@@ -143,27 +143,30 @@ public class DragTopLayout extends FrameLayout {
         }
 
         if (dragContentViewId != -1 && topViewId != -1) {
-            topView = findViewById(topViewId);
-            dragContentView = findViewById(dragContentViewId);
-
-            if (topView == null) {
-                throw new IllegalArgumentException("\"dtlTopView\" with id = \"@id/"
-                        + getResources().getResourceEntryName(topViewId)
-                        + "\" has NOT been found. Is a child with that id in this " + getClass().getSimpleName() + "?");
-            }
-
-
-            if (dragContentView == null) {
-                throw new IllegalArgumentException("\"dtlDragContentView\" with id = \"@id/"
-                        + getResources().getResourceEntryName(dragContentViewId)
-                        + "\" has NOT been found. Is a child with that id in this "
-                        + getClass().getSimpleName()
-                        + "?");
-            }
-
+            bindId(this);
         } else {
             topView = getChildAt(0);
             dragContentView = getChildAt(1);
+        }
+    }
+
+    private void bindId(View view) {
+        topView = view.findViewById(topViewId);
+        dragContentView = view.findViewById(dragContentViewId);
+
+        if (topView == null) {
+            throw new IllegalArgumentException("\"dtlTopView\" with id = \"@id/"
+                    + getResources().getResourceEntryName(topViewId)
+                    + "\" has NOT been found. Is a child with that id in this " + getClass().getSimpleName() + "?");
+        }
+
+
+        if (dragContentView == null) {
+            throw new IllegalArgumentException("\"dtlDragContentView\" with id = \"@id/"
+                    + getResources().getResourceEntryName(dragContentViewId)
+                    + "\" has NOT been found. Is a child with that id in this "
+                    + getClass().getSimpleName()
+                    + "?");
         }
     }
 
