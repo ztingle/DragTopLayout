@@ -7,6 +7,7 @@
     <string name="action_about">About</string>
     <string name="action_offset">Offset</string>
     <string name="action_over">OverDrag</string>
+    <string name="action_pulltorefresh">PullToRefresh</string>
 
     <string name="license">
         Copyright 2015 chenupt

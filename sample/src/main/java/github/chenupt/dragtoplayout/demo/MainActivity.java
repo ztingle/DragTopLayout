@@ -41,6 +41,7 @@ import github.chenupt.dragtoplayout.demo.fragments.ListViewFragment;
 import github.chenupt.dragtoplayout.demo.fragments.RecyclerFragment;
 import github.chenupt.dragtoplayout.demo.fragments.ScrollViewFragment;
 import github.chenupt.dragtoplayout.demo.fragments.WebViewFragment;
+import github.chenupt.dragtoplayout.demo.pulltorefresh.PullToRefreshActivity;
 import github.chenupt.multiplemodel.viewpager.ModelPagerAdapter;
 import github.chenupt.multiplemodel.viewpager.PagerModelManager;
 
@@ -155,7 +156,7 @@ public class MainActivity extends ActionBarActivity {
             dragLayout.setOverDrag(!dragLayout.isOverDrag());
             Toast.makeText(this, "overDrag:" + dragLayout.isOverDrag(), Toast.LENGTH_SHORT).show();
             return true;
-        }  else if(id == R.id.action_offset){
+        } else if(id == R.id.action_offset){
             if (dragLayout.getCollapseOffset() == 0){
                 dragLayout.openTopView(true);
                 dragLayout.setCollapseOffset(200);
@@ -163,6 +164,10 @@ public class MainActivity extends ActionBarActivity {
                 dragLayout.setCollapseOffset(0);
             }
             Toast.makeText(this, "offset:" + dragLayout.getCollapseOffset(), Toast.LENGTH_SHORT).show();
+            return true;
+        } else if(id == R.id.action_pulltorefresh){
+            Intent intent = new Intent(this, PullToRefreshActivity.class);
+            startActivity(intent);
             return true;
         } else if(id == R.id.action_about){
             Intent intent = new Intent(this, AboutActivity.class);

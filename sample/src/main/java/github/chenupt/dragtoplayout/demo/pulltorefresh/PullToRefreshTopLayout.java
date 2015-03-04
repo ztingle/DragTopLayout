@@ -1,4 +1,4 @@
-package github.chenupt.dragtoplayout.demo;
+package github.chenupt.dragtoplayout.demo.pulltorefresh;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -9,7 +9,7 @@ import github.chenupt.dragtoplayout.DragTopLayout;
 
 /**
  * Created by chenupt@gmail.com on 3/3/15.
- * Description :
+ * Description : Used for Android-PullToRefresh
  */
 public class PullToRefreshTopLayout extends PullToRefreshBase<DragTopLayout> {
 
@@ -34,8 +34,7 @@ public class PullToRefreshTopLayout extends PullToRefreshBase<DragTopLayout> {
 
     @Override
     protected DragTopLayout createRefreshableView(Context context, AttributeSet attrs) {
-        DragTopLayout dragTopLayout = new DragTopLayout(context, attrs);
-        return dragTopLayout;
+        return new DragTopLayout(context, attrs);
     }
 
     @Override
