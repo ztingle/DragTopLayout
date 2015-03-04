@@ -23,6 +23,11 @@
         android:title="@string/action_offset"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_pulltorefresh"
+        android:orderInCategory="104"
+        android:title="@string/action_pulltorefresh"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_about"
         android:orderInCategory="200"
         android:title="@string/action_about"

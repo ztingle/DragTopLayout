@@ -22,7 +22,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +41,7 @@ import github.chenupt.dragtoplayout.demo.fragments.ListViewFragment;
 import github.chenupt.dragtoplayout.demo.fragments.RecyclerFragment;
 import github.chenupt.dragtoplayout.demo.fragments.ScrollViewFragment;
 import github.chenupt.dragtoplayout.demo.fragments.WebViewFragment;
+import github.chenupt.dragtoplayout.demo.pulltorefresh.PullToRefreshActivity;
 import github.chenupt.multiplemodel.viewpager.ModelPagerAdapter;
 import github.chenupt.multiplemodel.viewpager.PagerModelManager;
 
@@ -72,16 +72,18 @@ public class MainActivity extends ActionBarActivity {
         toolbar.setTitle("DragTopLayout");
         setSupportActionBar(toolbar);
 
-        // init DragTopLayout
-        DragTopLayout.from(this)
-                .open()
-                .listener(new DragTopLayout.SimplePanelListener() {
-                    @Override
-                    public void onSliding(float ratio) {
-                        Log.d(TAG, "sliding: " + ratio);
-                    }
-                })
-                .setup(dragLayout);
+
+        // Optional setting or set them in your xml.
+//        dragLayout.setOverDrag(true)
+//                .setCollapseOffset(100)
+//                .listener(new DragTopLayout.SimplePanelListener() {
+//                    @Override
+//                    public void onSliding(float ratio) {
+//                        super.onSliding(ratio);
+//                    }
+//                })
+//                .closeTopView(false);
+
 
         // init pager
         PagerModelManager factory = new PagerModelManager();
@@ -154,7 +156,7 @@ public class MainActivity extends ActionBarActivity {
             dragLayout.setOverDrag(!dragLayout.isOverDrag());
             Toast.makeText(this, "overDrag:" + dragLayout.isOverDrag(), Toast.LENGTH_SHORT).show();
             return true;
-        }  else if(id == R.id.action_offset){
+        } else if(id == R.id.action_offset){
             if (dragLayout.getCollapseOffset() == 0){
                 dragLayout.openTopView(true);
                 dragLayout.setCollapseOffset(200);
@@ -162,6 +164,10 @@ public class MainActivity extends ActionBarActivity {
                 dragLayout.setCollapseOffset(0);
             }
             Toast.makeText(this, "offset:" + dragLayout.getCollapseOffset(), Toast.LENGTH_SHORT).show();
+            return true;
+        } else if(id == R.id.action_pulltorefresh){
+            Intent intent = new Intent(this, PullToRefreshActivity.class);
+            startActivity(intent);
             return true;
         } else if(id == R.id.action_about){
             Intent intent = new Intent(this, AboutActivity.class);

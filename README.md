@@ -7,7 +7,7 @@ Sometimes we need to show a top view above a ViewPager or ListView. DragTopLayou
 
 
 
-The sample app: [click me](https://github.com/chenupt/DragTopLayout/raw/master/imgs/sample-debug-1.1.0.apk)
+The sample app: [click me](https://github.com/chenupt/DragTopLayout/raw/master/imgs/sample-debug-1.2.0.apk)
 
 Here is a show case: 
 
@@ -19,9 +19,21 @@ Add the dependency to your build.gradle.
 
 ```
 dependencies {
-    compile 'com.github.chenupt.android:dragtoplayout:1.1.0@aar'
+    compile 'com.github.chenupt.android:dragtoplayout:1.2.0@aar'
 }
 ```
+
+1.2.1-SNAPSHOT
+```
+maven {
+    url "https://oss.sonatype.org/content/repositories/snapshots/"
+}
+
+dependencies {
+    compile 'com.github.chenupt.android:dragtoplayout:1.2.1-SNAPSHOT@aar'
+}
+```
+
 Add the DragTopLayout in your layout.
 
 ```xml
@@ -48,18 +60,17 @@ Add the DragTopLayout in your layout.
 
  </github.chenupt.dragtoplayout.DragTopLayout>
 ```
-Init the DragTopLayout in your activity code.
-```java
-DragTopLayout.from(this)
-        .open()
-        .listener(new DragTopLayout.SimplePanelListener() {
-        ...
-        }).setup(dragLayout);
-```
+
 [XML Attributes](https://github.com/chenupt/DragTopLayout/blob/dev/library/src/main/res/values/attrs.xml)
 
 Changelog
 ---
+###v1.2.0
+ * Support Scrolling continue [#7](https://github.com/chenupt/DragTopLayout/pull/7).@sockeqwe
+ * Retain state [#8](https://github.com/chenupt/DragTopLayout/pull/8).@sockeqwe
+ * Fixed [#10](https://github.com/chenupt/DragTopLayout/issues/10), [#5](https://github.com/chenupt/DragTopLayout/issues/5), [#4](https://github.com/chenupt/DragTopLayout/issues/4).
+ * Remove wizard.
+
 ###v1.1.0
  * Support [collapse offset](https://github.com/chenupt/DragTopLayout/issues/2).
  * Support drag down while attaching top view.

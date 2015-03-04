@@ -17,5 +17,7 @@
         <!-- The content view which will be dragged together with "dtlTopView" -->
         <attr name="dtlDragContentView" format="reference" />
 
+        <!-- True the top view can be dragged -->
+        <attr name="dtlCaptureTop" format="boolean" />
     </declare-styleable>
 </resources>
