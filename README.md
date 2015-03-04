@@ -7,7 +7,7 @@ Sometimes we need to show a top view above a ViewPager or ListView. DragTopLayou
 
 
 
-The sample app: [click me](https://github.com/chenupt/DragTopLayout/raw/master/imgs/sample-debug-1.2.0.apk)
+The sample app: [click me](https://github.com/chenupt/DragTopLayout/raw/master/imgs/sample-debug-1.2.1.apk)
 
 Here is a show case: 
 
@@ -19,18 +19,7 @@ Add the dependency to your build.gradle.
 
 ```
 dependencies {
-    compile 'com.github.chenupt.android:dragtoplayout:1.2.0@aar'
-}
-```
-
-1.2.1-SNAPSHOT
-```
-maven {
-    url "https://oss.sonatype.org/content/repositories/snapshots/"
-}
-
-dependencies {
-    compile 'com.github.chenupt.android:dragtoplayout:1.2.1-SNAPSHOT@aar'
+    compile 'com.github.chenupt.android:dragtoplayout:1.2.1@aar'
 }
 ```
 
@@ -65,6 +54,11 @@ Add the DragTopLayout in your layout.
 
 Changelog
 ---
+###v1.2.1
+ * Fixed [#12](https://github.com/chenupt/DragTopLayout/issues/12)
+ * Fixed [#20](https://github.com/chenupt/DragTopLayout/issues/20)
+ * Support [PullToRefresh](https://github.com/chenupt/DragTopLayout/blob/master/sample%2Fsrc%2Fmain%2Fjava%2Fgithub%2Fchenupt%2Fdragtoplayout%2Fdemo%2Fpulltorefresh%2FPullToRefreshTopLayout.java)
+
 ###v1.2.0
  * Support Scrolling continue [#7](https://github.com/chenupt/DragTopLayout/pull/7).@sockeqwe
  * Retain state [#8](https://github.com/chenupt/DragTopLayout/pull/8).@sockeqwe
@@ -81,7 +75,8 @@ Changelog
 
 Developed By
 ---
- * Chenupt - <chenupt@outlook.com> 
+ * Chenupt - <chenupt@outlook.com>
+ * G+ [chenupt](https://plus.google.com/u/0/109194013506774756478)
  * 微博：[chenupt](http://weibo.com/p/1005052159173535/home)
  * QQ：753785666
 
