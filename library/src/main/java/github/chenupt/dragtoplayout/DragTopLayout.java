@@ -52,6 +52,7 @@ public class DragTopLayout extends FrameLayout {
     private int collapseOffset;
     private int topViewId = -1;
     private int dragContentViewId = -1;
+    private boolean captureTop = true;
 
     // Used for scrolling
     private boolean dispatchingChildrenDownFaked = false;
@@ -115,6 +116,7 @@ public class DragTopLayout extends FrameLayout {
         dragContentViewId = a.getResourceId(R.styleable.DragTopLayout_dtlDragContentView, -1);
         topViewId = a.getResourceId(R.styleable.DragTopLayout_dtlTopView, -1);
         initOpen(a.getBoolean(R.styleable.DragTopLayout_dtlOpen, true));
+        captureTop = a.getBoolean(R.styleable.DragTopLayout_dtlCaptureTop, true);
         a.recycle();
     }
 
@@ -239,8 +241,8 @@ public class DragTopLayout extends FrameLayout {
             // Calculate the ratio while dragging.
             panelListener.onSliding(ratio);
             if (ratio > refreshRatio && !isRefreshing) {
-                panelListener.onRefresh();
                 isRefreshing = true;
+                panelListener.onRefresh();
             }
         }
     }
@@ -292,7 +294,7 @@ public class DragTopLayout extends FrameLayout {
     private ViewDragHelper.Callback callback = new ViewDragHelper.Callback() {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
-            if (child == topView) {
+            if (child == topView && captureTop) {
                 dragHelper.captureChildView(dragContentView, pointerId);
                 return false;
             }
@@ -595,6 +597,7 @@ public class DragTopLayout extends FrameLayout {
 
         }
 
+        @Deprecated
         @Override
         public void onRefresh() {
 
