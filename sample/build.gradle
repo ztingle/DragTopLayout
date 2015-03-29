@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "github.chenupt.dragtoplayout.demo"
-        minSdkVersion 14
+        minSdkVersion 10
         targetSdkVersion 21
         versionCode 4
         versionName "1.1"
@@ -26,7 +26,7 @@ dependencies {
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.google.guava:guava:18.0'
     compile 'com.jpardogo.materialtabstrip:library:1.0.8'
-    compile 'com.getbase:floatingactionbutton:1.7.0'
+    compile 'com.github.shell-software:fab:1.0.5'
 
     compile 'com.navercorp.pulltorefresh:library:3.2.0@aar'
 
