@@ -1,3 +1,5 @@
+[![Android Gems](http://www.android-gems.com/badge/chenupt/DragTopLayout.svg?branch=master)](http://www.android-gems.com/lib/chenupt/DragTopLayout)
+
 DragTopLayout
 ---
 ![icon](https://raw.githubusercontent.com/chenupt/DragTopLayout/master/imgs/icon.png)
